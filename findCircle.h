@@ -1,3 +1,6 @@
+#ifndef FINDCIRCLE_H
+#define FINDCIRCLE_H
+
 #include <stdint.h>
 typedef uint8_t UINT8;
 #include <iostream>
@@ -139,3 +142,5 @@ line findPerpendicularLine(point p1, point p2);
 precisePoint findIntersection(line l1, line l2);
 
 precisePoint findEquidistant(point p1, point p2, point p3);
+
+#endif
