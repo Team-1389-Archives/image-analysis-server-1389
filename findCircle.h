@@ -108,10 +108,7 @@ public:
     vector<circle> whereBall(CImg<UINT8>& image);
 
 private:
-    rgb WHITE; 
-    rgb BLACK;
     float ballHValue;
-    hsv BALL_BLUE;
     int imageWidth;//used because some operations need to work proportional to image size
 };
 

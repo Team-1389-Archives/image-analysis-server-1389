@@ -1,5 +1,8 @@
 #include "findCircle.h"
 
+static const rgb WHITE={255,255,255};
+static const rgb BLACK={0,0,0};
+
 inline float MIN3(float x, float y, float z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}
 
 inline float MAX3(float x,float y,float z)  {return (y >= z ? (x >= y ? x : y) : (x >= z ? x : z));}
@@ -23,10 +26,7 @@ inline void setRgb(CImg<UINT8>& image,int x ,int y, rgb color){
 inline float square(float num){return num * num;}
 
 BallFinder::BallFinder(){
-    WHITE={255,255,255};
-    BLACK={0,0,0};
     ballHValue = 220;
-    BALL_BLUE = {15, 0.75, 0.8};
 }
 
 float precisePoint::distanceTo(point p){
