@@ -1,5 +1,27 @@
 #include "findCircle.h"
 
+inline float MIN3(float x, float y, float z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}
+
+inline float MAX3(float x,float y,float z)  {return (y >= z ? (x >= y ? x : y) : (x >= z ? x : z));}
+
+inline int abs(int num){return (num < 0)?-num:num;}//math.h only has fabs() for doubles
+
+inline rgb getRgb(CImg<UINT8>& image,int x ,int y){//Here you use references, why not in other places? Be careful about using unsigned char. Since you want an unsigned 8-bit integer, consider using uint8_t instead.
+    rgb pixel;
+    pixel.r = image(x,y,0);
+    pixel.g = image(x,y,1);
+    pixel.b = image(x,y,2);
+    return pixel;
+}
+
+inline void setRgb(CImg<UINT8>& image,int x ,int y, rgb color){
+    image(x,y,0) = color.r;
+    image(x,y,1) = color.g;
+    image(x,y,2) = color.b;
+}
+
+inline float square(float num){return num * num;}
+
 BallFinder::BallFinder(){
     WHITE={255,255,255};
     BLACK={0,0,0};
