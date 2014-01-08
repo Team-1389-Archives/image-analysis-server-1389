@@ -6,4 +6,4 @@ if [ -z $CXX ]; then
                 CXX="/usr/bin/env g++"
         fi
 fi
-exec $CXX --std=c++11 -g -o findCircleTest -Wall -Werror findCircleTest.cpp findCircle.cpp -I/usr/local/include -ljpeg
+exec $CXX --std=c++0x -g -o findCircleTest -Wall -Werror `pkg-config --cflags --libs opencv` streamingMain.cpp findCircle.cpp -ljpeg 

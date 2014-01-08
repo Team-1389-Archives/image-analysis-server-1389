@@ -1,6 +1,5 @@
-#include <Windows.h>
 #define cimg_use_opencv
-#include "Cimg.h"
+#include <CImg.h>
 #include <iostream>
 #include "findCircle.h"
 #define cimg_use_jpeg 1
@@ -11,7 +10,7 @@ using namespace cimg_library;
 int main(){
 
     CImg<UINT8> image;
-    image.load_camera(1);
+    image.load_camera(0);
 
     CImgDisplay disp;
 
