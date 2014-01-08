@@ -1,3 +1,4 @@
 findCircleTest
 *.dSYM
 ./ignore_me/
+*.swp
