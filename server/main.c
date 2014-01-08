@@ -1,3 +1,5 @@
+#define _POSIX_SOURCE		`1
+#define _BSD_SOURCE		 1
 #include <ev.h>
 #include <string.h>
 #include <unistd.h>
@@ -10,6 +12,8 @@
 #include <signal.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <strings.h>
+#include <sys/types.h>
 
 #define PORT			8080
 #define COMMAND			"./run.sh"
