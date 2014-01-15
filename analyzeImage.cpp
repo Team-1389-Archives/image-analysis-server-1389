@@ -490,3 +490,18 @@ precisePoint findEquidistant(point p1, point p2, point p3){
    line l2 = findPerpendicularLine(p2,p3);
    return findIntersection(l1,l2);
 }
+
+CImg<UINT8> booleanBlur(CImg<UINT8> & image, int amount){
+    int width = image.width(), height = image.height();
+    float imageMatrix[width()][height()];
+    float part = 1 / (float)amount;//used later
+    
+    //vertical part of blur
+    for (int x = 0; x < width; ++x){
+        for (int y = 0; y < height; ++y){
+            if (image(x,y,0) == 255)
+                imageMatrix[x][y] = part;
+            
+        }
+    }
+}
