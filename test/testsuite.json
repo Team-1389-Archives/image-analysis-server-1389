@@ -1,1 +1,1 @@
-[]
+[{"comments":"Without Logo","expected":[{"center":{"x":825,"y":468},"radius":83.86298349093002,"centerError":13.769860152967379,"radiusError":20.396078054371138}],"id":1,"url":"test-images/811afefb-faad-466a-80f9-0dc8f76503f4.jpg"},{"comments":"With logo","expected":[{"center":{"x":795,"y":459},"radius":71.19691004531025,"centerError":9.875440295648207,"radiusError":15.620499351813308}],"id":2,"url":"test-images/d57384b1-d61e-4091-954f-7b5a476abbab.jpg"}]
