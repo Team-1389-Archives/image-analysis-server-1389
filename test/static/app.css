@@ -1,0 +1,205 @@
+html, body{
+	margin:0;
+	padding:0;
+	width:100%;
+	height:100%;
+	font-family:sans-serif;
+	font-size:14px;
+}
+
+#logo{
+	border:none;
+	padding-left:50%;
+	margin-left:-131px;
+	height:160px;
+}
+
+#container{
+	position:absolute;
+	top:166px;
+	left:10px;
+	right:10px;
+	bottom:10px;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
+
+#run-button{
+	position: absolute;
+	width: 100px;
+	margin-left: -50px;
+	left: 50%;
+	top:2px;
+}
+
+#status{
+	position:absolute;
+	top: 55px;
+	font-style: italic;
+	width: 100%;
+	text-align: center;
+}
+
+.testcase{
+	position:relative;
+	background-color:#EEE;
+}
+.testcase > .border{
+	position:absolute;
+	width:100%;
+	height:100%;
+	border:1px solid #666;
+	z-index:-1;
+}
+.testcase > .comments{
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	right: 1px;
+}
+.testcase:not(.selected){
+	height:250px;
+	width:250px;
+	z-index:5;
+	cursor:pointer;
+	display:inline-block;
+	margin-right:10px;
+	vertical-align:top;
+}
+.testcase.selected .display-overlay{
+	display:none;
+}
+.testcase:not(.selected) .display-overlay{
+	position:absolute;
+	right:1px;
+	top:20px;
+	left:1px;
+	bottom:1px;
+	font-size: 100px;
+	text-align: center;
+	padding-top: 45px;
+}
+.testcase .display-overlay:hover{
+	background-color:transparent !important;
+	font-size:0px !important;
+}
+.testcase.failing .display-overlay{
+	background-color:rgba(255, 0, 0, 0.25);
+}
+.testcase.failing .display-overlay:before{
+	content:'x';
+	color:red;
+}
+.testcase.passing .display-overlay{
+	background-color:rgba(0, 255, 0, 0.25);
+}
+.testcase.passing .display-overlay:before{
+	content:'\2713';
+	color:green;
+}
+
+.testcase .display{
+	background-repeat:no-repeat;
+	background-position:center center;
+	position:absolute;
+	right:1px;
+	top:24px;
+	left:1px;
+}
+.testcase:not(.selected) .display svg{
+	display:none;
+}
+.testcase.selected .display svg{
+	display:block;
+	position:absolute;
+	top:0px;
+	left:0px;
+}
+.testcase:not(.selected) .display{
+	bottom:1px;
+	background-size:contain;
+}
+.testcase:not(.selected) .display img{
+	display:none;
+}
+
+.testcase.selected .display{
+	overflow:auto;
+	background-size:0px 0px;
+	bottom:20px;
+	margin:0;
+	padding:0;
+}
+
+.testcase:not(.selected) .toolbar{
+	display:none;
+}
+
+.testcase.selected .toolbar{
+	position:absolute;
+	bottom:0px;
+	left:0px;
+	width:100%;
+	height:20px;
+	background:#999;
+	padding-top:2px;
+	padding-left:4px;
+}
+
+.testcase:not(.selected):hover{
+	background-color:#CCC;
+}
+.testcase.selected{
+	z-index:99;
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:99%;
+	height:99%;
+}
+
+.fade-hover{
+	opacity:0.5;
+}
+.fade-hover:hover{
+	opacity:1;
+}
+
+#add-testcase-button{
+	position:absolute;
+	left:10px;
+	top:10px;
+	width:75px;
+	height:75px;
+	border:1px solid black;
+	background:#CCC;
+	cursor:pointer;
+}
+
+#add-testcase-button:active{
+	background:black;
+	color:white;
+}
+
+#add-testcase-button > input{
+	cursor:pointer;
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+	opacity:0;
+}
+
+
+#save-button{
+	position:absolute;
+	right:10px;
+	top:10px;
+	width:50px;
+	height:50px;
+}
+
+.template{
+	display:none;
+}
