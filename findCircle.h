@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include <stdlib.h>
-#include <chrono>
 #include <math.h>
 //You use Windows line endings, instead of UNIX line endings. You should be able to change it in Code Blocks. UNIX line endings are generally the standard
 //<stuff to do to use cimg>
@@ -23,7 +22,6 @@
                          ((x) >= (z) ? (x) : (z)))
 
 using namespace std;
-using namespace std::chrono;
 using namespace cimg_library;
 
 struct hsv;
@@ -94,11 +92,11 @@ struct line{//ax+by+c=0
     float c;
 };
 
-rgb WHITE = {255,255,255};
-rgb BLACK = {0,0,0};
-hsv BALL_BLUE = {240,0.6,50};//used to compare against during threshholding
-const UINT8 red[3] = {255,0,0};//this is an array instead of an rgb struct so it can be used with the cimg draw_circle(function)
-int imageWidth;//used because some operations need to work proportional to image size
+extern rgb WHITE;
+extern rgb BLACK;
+extern hsv BALL_BLUE;//used to compare against during threshholding
+extern const UINT8 red[3];//this is an array instead of an rgb struct so it can be used with the cimg draw_circle(function)
+extern int imageWidth;//used because some operations need to work proportional to image size
 
 
 CImg<UINT8> threshhold(CImg<UINT8>& image, hsv color);

@@ -1,3 +1,10 @@
+#include "findCircle.h"
+rgb WHITE={255,255,255};
+rgb BLACK={0,0,0};
+hsv BALL_BLUE = {240,0.6,50};
+int imageWidth;
+const UINT8 red[3] = {255,0,0};
+
 float precisePoint::distanceTo(point p){
     return sqrt(         square((((float) p.x ) - x))     +    square((((float) p.y ) - y))          );
 }
