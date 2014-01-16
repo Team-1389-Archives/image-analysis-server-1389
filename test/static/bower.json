@@ -1,0 +1,10 @@
+{
+	"name":"VisionCI",
+	"dependencies":{
+		"jquery":"2.0.3",
+		"q":"1.0.0",
+		"underscore":"1.5.2",
+		"angular":"1.2.8"
+	},
+	"private":true
+}
