@@ -11,7 +11,11 @@ visionCIApp.controller('TestsuiteController', function($scope, $http){
 	$scope.selectedId=null;
 	$http.get('/testsuite.json').then(function(data){
 		$scope.testsuite=data.data;
-		nextId=_.max($scope.testsuite, function(x){return x.id;}).id+1;
+		if($scope.testsuite.length===0){
+			nextId=1;
+		}else{
+			nextId=_.max($scope.testsuite, function(x){return x.id;}).id+1;
+		}
 	});
 	$scope.isPassingTest=function(testcase){
 		if(!testcase.results){
