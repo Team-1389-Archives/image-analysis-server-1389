@@ -17,7 +17,7 @@ try{
 	fs.mkdirSync(__dirname+'/test-images');
 }catch(e){/*It already exists.*/}
 
-server.listen(9000);
+server.listen(process.env.PORT||9000, process.env.IP||'0.0.0.0');
 
 app.use(express.logger());
 app.use(express.json());
