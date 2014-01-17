@@ -4,11 +4,13 @@ var net=require('net'),
 var PATH_TO_EXE=__dirname+'/run.sh';
 
 var processed="";
+var chld=null;
 
 function stage_processing(){
-	var chld=child_process.spawn(PATH_TO_EXE, [], {
+	chld=child_process.spawn(PATH_TO_EXE, [], {
 		cwd:__dirname,
-		stdio: [null, 'pipe', process.stderr]
+		stdio: [null, 'pipe', process.stderr],
+		detached: false
 	});
 	var out="";
 	chld.stdout.on('data', function(data){
@@ -23,9 +25,17 @@ function stage_processing(){
 		if(code!==0){
 			console.log('error running test with code '+code);
 		}
+		chld=null;
 		process.nextTick(stage_processing);
 	});
 }
+
+process.on('SIGINT', function(){
+	if(chld){
+		chld.kill('SIGKILL');//Let's just make sure it happens
+	}
+	process.kill(0);
+});
 
 stage_processing();
 
