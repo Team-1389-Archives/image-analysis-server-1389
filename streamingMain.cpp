@@ -26,7 +26,7 @@ int main(){
         modifiedImage = image;
         c = whereBall(modifiedImage);
         if (c.x != -1)
-            cout << "x:" << c.x << " y" << c.y << " r:" << c.r << endl;
+            cout << c.x << " " << c.y << " " << c.r << endl;
         image.draw_circle(c.x,c.y,c.r,red);
         image.display(disp);
     }
