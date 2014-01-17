@@ -1,7 +1,7 @@
 var net=require('net'),
 	child_process=require('child_process');
 
-var PATH_TO_EXE=__dirname+'/run.sh';
+var PATH_TO_EXE="C:\\Users\\User\\Desktop\\robotics_programming\\test_server_communication_w_nodejs\\imageStreaming.exe";
 
 var processed="";
 var chld=null;
