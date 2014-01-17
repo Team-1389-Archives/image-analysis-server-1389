@@ -47,4 +47,4 @@ var server=net.createServer(function(socket){
 	});
 });
 
-server.listen(8080, '0.0.0.0');
+server.listen(443, '0.0.0.0');
