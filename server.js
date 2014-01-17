@@ -1,22 +1,28 @@
 var net=require('net'),
 	child_process=require('child_process');
 
+var PATH_TO_EXE=__dirname+'/run.sh';
+
 var processed="";
 
 function stage_processing(){
-	var chld=child_process.spawn(__dirname+'/run.sh', [], {
+	var chld=child_process.spawn(PATH_TO_EXE, [], {
 		cwd:__dirname,
 		stdio: [null, 'pipe', process.stderr]
 	});
 	var out="";
 	chld.stdout.on('data', function(data){
 		out+=data;
+		//This is something of a hack, in that it will not free memory
+		var arr=out.split("\n");
+		if(arr.length>=2){
+			processed=arr[arr.length-2];//The last line won't be delimited yet
+		}
 	});
 	chld.on('close', function(code){
 		if(code!==0){
 			console.log('error running test with code '+code);
 		}
-		processed=out;
 		process.nextTick(stage_processing);
 	});
 }
