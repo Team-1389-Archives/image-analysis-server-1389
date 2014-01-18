@@ -1,7 +1,7 @@
 #include "findCircle.h"
 rgb WHITE={255,255,255};
 rgb BLACK={0,0,0};
-hsv BALL_BLUE = {215.8,0.095,.5};//calibrated using logitech webcam
+hsv BALL_BLUE = {215.8,0.5,.5};//calibrated using logitech webcam
 int imageWidth;
 const UINT8 red[3] = {255,0,0};
 
@@ -80,8 +80,8 @@ circle outline::isCircle(){//return circle with x,y, and r of -1 if not a circle
 }
 
 circle whereBall(CImg<UINT8>& image){
-    image.blur(imageWidth/50);
     image = threshhold(image, BALL_BLUE);
+    image.blur(imageWidth/40);
     image = booleanEdgeDetect(image);
     vector<outline> outlines = findOutlines(image);
     vector<circle> circles;
@@ -128,7 +128,7 @@ CImg<UINT8> threshhold(CImg<UINT8>& image, hsv color){
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compare(color, 30.0f, 0.5f)){///*************currently configured for logitec webcam *******************************************************check this (origonal(15.0,0.25))
+            if (pixel.getHsv().compare(color, 20.0f, 0.25f)){///*************currently configured for logitec webcam *******************************************************check this (origonal(15.0,0.25))
                 setRgb(finalImage,x,y,WHITE);
             }
         }
@@ -179,22 +179,22 @@ CImg<unsigned char> booleanEdgeDetect(CImg<unsigned char>& image){
     bool isEdge;
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
-            if (image(x,y,0) == 255){
+            if (image(x,y,0) > 127){///********** > 127 because after blur this is area we want;
                     isEdge = false;
                 if (x != 0){
-                    if (image(x-1,y,0) == 0)//means its black pixel Why do black pixels automatically mean an edge?
+                    if (image(x-1,y,0) <= 127)//means its black pixel Why do black pixels automatically mean an edge?
                         isEdge = true;
                 }
                 if (x != image.width() - 1){
-                    if (image(x+1,y,0) == 0)
+                    if (image(x+1,y,0) <= 127)
                         isEdge = true;
                 }
                 if (y != 0){
-                    if (image(x,y-1,0) == 0)
+                    if (image(x,y-1,0) <= 127)
                         isEdge = true;
                 }
                 if (y != image.height() - 1){
-                    if (image(x,y+1,0) == 0)
+                    if (image(x,y+1,0) <= 127)
                         isEdge = true;
                 }
                 if (isEdge)

@@ -6,20 +6,12 @@
 //You use Windows line endings, instead of UNIX line endings. You should be able to change it in Code Blocks. UNIX line endings are generally the standard
 //<stuff to do to use cimg>
 #define cimg_display 0
-//#define cimg_use_jpeg 1   causes need for libjpeg
+#define cimg_use_jpeg 1
 
 #include "cimg.h"
 //</stuff to do to use cimg>
 //Generally prefer inline functions to macros. If I do something like square(expensive_operation()), then expensive_operation() is called twice with the macro. Also, if I call square((x++)), then x will be incremented twice, not once.
-#define MIN3(x,y,z)  ((y) <= (z) ? \
-                         ((x) <= (y) ? (x) : (y)) \
-                     : \
-                         ((x) <= (z) ? (x) : (z)))
 
-#define MAX3(x,y,z)  ((y) >= (z) ? \
-                         ((x) >= (y) ? (x) : (y)) \
-                     : \
-                         ((x) >= (z) ? (x) : (z)))
 
 using namespace std;
 using namespace cimg_library;
@@ -112,3 +104,5 @@ precisePoint findIntersection(line l1, line l2);
 precisePoint findEquidistant(point p1, point p2, point p3);
 inline float square(float num){return num * num;}
 circle whereBall(CImg<UINT8>& image);
+inline int MIN3(int x, int y, int z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}
+inline int MAX3(int x,int y,int z)  {return (y >= z ? (x >= y ? x : y) : (x >= z ? x : z));}
