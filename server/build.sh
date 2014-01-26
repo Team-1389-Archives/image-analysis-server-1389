@@ -6,4 +6,4 @@ if [ -z $CC ]; then
 		CC="gcc"
 	fi
 fi
-exec $CC -g -o server -O3 --std=c11 -Wall -Werror -D_REENTRANT main.c -lev -pthread
+exec $CC -g -o server -O3 --std=c11 -Wall -Werror main.c -lev
