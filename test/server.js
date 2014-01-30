@@ -17,6 +17,7 @@ try{
 	fs.mkdirSync(__dirname+'/test-images');
 }catch(e){/*It already exists.*/}
 
+var CMD=(process.argv[2])?process.argv[2]:__dirname+'/run-test.sh';
 server.listen(9000);
 
 app.use(express.logger());
@@ -59,7 +60,7 @@ app.post('/testsuite.json', function(req, res){
 app.post('/run-test', function(req, res){
 	res.set('Cache-Control', 'no-cache');
 	res.set('Content-Type', 'text-plain; charset=utf-8');
-	var chld=child_process.spawn(__dirname+'/run-test.sh', [req.body.img], {
+	var chld=child_process.spawn(CMD, [req.body.img], {
 		cwd:__dirname,
 		stdio: [null, 'pipe', process.stderr]
 	});
