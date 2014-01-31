@@ -1,7 +1,7 @@
 #include "findCircle.h"
 rgb WHITE={255,255,255};
 rgb BLACK={0,0,0};
-hsv BALL_BLUE = {215.8,0.5,.5};//calibrated using logitech webcam
+hsv BALL_BLUE = {347,0.68,.5};//calibrated using logitech webcam
 int imageWidth;
 const UINT8 red[3] = {255,0,0};
 
@@ -82,7 +82,7 @@ circle outline::isCircle(){//return circle with x,y, and r of -1 if not a circle
 circle whereBall(CImg<UINT8>& image){
     imageWidth = image.width();
     image = threshhold(image, BALL_BLUE);
-    //image.blur(imageWidth/40);            //blur doesn't appear to be necessary
+    image.blur(imageWidth/300);
     image = booleanEdgeDetect(image);
     vector<outline> outlines = findOutlines(image);
     vector<circle> circles;
@@ -129,7 +129,7 @@ CImg<UINT8> threshhold(CImg<UINT8>& image, hsv color){
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compare(color, 100.0f, 0.1f)){///*************currently configured for logitec webcam *******************************************************check this (origonal(15.0,0.25))
+            if (pixel.getHsv().compare(color, 100.0f, 0.25f)){///*************currently configured for logitec webcam *******************************************************check this (origonal(15.0,0.25))
                 setRgb(finalImage,x,y,WHITE);
             }
         }

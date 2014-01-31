@@ -59,17 +59,17 @@ int main(){
 
     while(!disp.is_closed()){
         load_cam(image, camera);
-        //modifiedImage = image;
-        //c = whereBall(modifiedImage);
+        modifiedImage = image;
+        c = whereBall(modifiedImage);
 
-        image = threshhold(image, BALL_BLUE);
-        //image = image.blur(image.width()/80);
+        //image = threshhold(image, BALL_BLUE);
+        //image = image.blur(image.width()/300);
         //cout << "width:" << image.width() /80 << endl;
         //image = booleanEdgeDetect(image);
 
-        //if (c.x != -1)
-            //cout << "3" << " " << c.y << " " << c.r << endl;
-        //image.draw_circle(c.x,c.y,c.r,red);
+        if (c.x != -1)
+            cout << "3" << " " << c.y << " " << c.r << endl;
+        image.draw_circle(c.x,c.y,c.r,red);
         image.display(disp);
     }
 
