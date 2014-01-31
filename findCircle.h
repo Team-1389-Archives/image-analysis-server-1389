@@ -8,9 +8,9 @@ typedef uint8_t UINT8;
 //You use Windows line endings, instead of UNIX line endings. You should be able to change it in Code Blocks. UNIX line endings are generally the standard
 //<stuff to do to use cimg>
 //#define cimg_display 0
-#define cimg_use_jpeg 1
+//#define cimg_use_jpeg 1
 
-#include <CImg.h> 
+#include "CImg.h"
 //</stuff to do to use cimg>
 //Generally prefer inline functions to macros. If I do something like square(expensive_operation()), then expensive_operation() is called twice with the macro. Also, if I call square((x++)), then x will be incremented twice, not once.
 
