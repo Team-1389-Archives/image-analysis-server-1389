@@ -6,4 +6,4 @@ if [ -z $CC ]; then
 		CC="gcc"
 	fi
 fi
-exec $CC -g -o server -O3 --std=c99 -Wall -Werror main.c -lev
+exec $CC -g -o server -O3 --std=c99 -Werror main.c -lev
