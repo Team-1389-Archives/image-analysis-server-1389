@@ -1,5 +1,3 @@
 #!/bin/sh
-while true; do
-	uptime
-	sleep 0.1
-done
+cd `dirname $0`/..
+exec ./streamingMain

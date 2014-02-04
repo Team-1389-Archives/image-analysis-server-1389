@@ -1,6 +1,5 @@
-#include <Windows.h>
 #define cimg_use_opencv
-#include "Cimg.h"
+#include <CImg.h>
 #include <iostream>
 #include <cstdlib>
 #include "findCircle.h"
