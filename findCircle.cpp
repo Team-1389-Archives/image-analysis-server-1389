@@ -1,7 +1,7 @@
 #include "findCircle.h"
 rgb WHITE={255,255,255};
 rgb BLACK={0,0,0};
-hsv BALL_BLUE = {347,0.68,.5};//calibrated using logitech webcam
+hsv BALL_BLUE = {220,0.5,.5};//calibrated using logitech webcam
 int imageWidth;
 const UINT8 red[3] = {255,0,0};
 
@@ -79,10 +79,22 @@ circle outline::isCircle(){//return circle with x,y, and r of -1 if not a circle
     return ret;
 }
 
+bool hsv::compareToColor(float colorH, float maxHVariance, float minS, float minv, float maxV){
+    if (abs(h - colorH) > maxHVariance)
+        return false;
+    if (s < minS)
+        return false;
+    if (v < minv)
+        return false;
+    if (v > maxV)
+        return false;
+    return true;
+}
+
 circle whereBall(CImg<UINT8>& image){
     imageWidth = image.width();
     image = threshhold(image, BALL_BLUE);
-    image.blur(imageWidth/300);
+    //image.blur_median(imageWidth/300);
     image = booleanEdgeDetect(image);
     vector<outline> outlines = findOutlines(image);
     vector<circle> circles;
@@ -129,7 +141,7 @@ CImg<UINT8> threshhold(CImg<UINT8>& image, hsv color){
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compare(color, 100.0f, 0.25f)){///*************currently configured for logitec webcam *******************************************************check this (origonal(15.0,0.25))
+            if (pixel.getHsv().compareToColor(220,25,0.2,0.2,0.8)){
                 setRgb(finalImage,x,y,WHITE);
             }
         }
@@ -140,10 +152,13 @@ CImg<UINT8> threshhold(CImg<UINT8>& image, hsv color){
 // algorithm from http://www.cs.rit.edu/~ncs/color/t_convert.html
 hsv rgb::getHsv()
 {
+    float r_ = ((float)r)/255.0f;
+    float g_ = ((float)g)/255.0f;
+    float b_ = ((float)b)/255.0f;
     hsv ret;
 	float min, max, delta;
-	min = MIN3( r, g, b );
-	max = MAX3( r, g, b );
+	min = MIN3( r_, g_, b_ );
+	max = MAX3( r_, g_, b_ );
 	ret.v = max;				// v
 	delta = max - min;
 	if( max != 0 )
@@ -154,12 +169,12 @@ hsv rgb::getHsv()
 		ret.h = -1;
 		return ret;
 	}
-	if( r == max )
-		ret.h = ( g - b ) / delta;		// between yellow & magenta
+	if( r_ == max )
+		ret.h = ( g_ - b_ ) / delta;		// between yellow & magenta
 	else if( g == max )
-		ret.h = 2 + ( b - r ) / delta;	// between cyan & yellow
+		ret.h = 2 + ( b_ - r_ ) / delta;	// between cyan & yellow
 	else
-		ret.h = 4 + ( r - g ) / delta;	// between magenta & cyan
+		ret.h = 4 + ( r_ - g_ ) / delta;	// between magenta & cyan
 	ret.h *= 60;				// degrees
 	if( ret.h < 0 )
 		ret.h += 360;

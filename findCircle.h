@@ -52,6 +52,7 @@ struct hsv{
     float s;
     float v;
     bool compare(hsv other, float maxHVariance, float maxSVariance);//Consider making other a reference
+    bool compareToColor(float h, float maxHVariance, float minS, float minv, float maxV);
 };
 
 
@@ -124,6 +125,6 @@ inline float square(float num){return num * num;}
 
 circle whereBall(CImg<UINT8>& image);
 
-inline int MIN3(int x, int y, int z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}
+inline float MIN3(float x, float y, float z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}
 
-inline int MAX3(int x,int y,int z)  {return (y >= z ? (x >= y ? x : y) : (x >= z ? x : z));}
+inline float MAX3(float x,float y,float z)  {return (y >= z ? (x >= y ? x : y) : (x >= z ? x : z));}
