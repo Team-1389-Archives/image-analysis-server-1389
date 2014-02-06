@@ -1,7 +1,7 @@
 #include "findCircle.h"
 rgb WHITE={255,255,255};
 rgb BLACK={0,0,0};
-hsv BALL_BLUE = {347,0.68,.5};//calibrated using logitech webcam
+float ballHValue = 220;
 int imageWidth;
 const UINT8 red[3] = {255,0,0};
 
@@ -30,7 +30,7 @@ bool possibleCenter::compare(precisePoint p, float radius){
 circle outline::isCircle(){//return circle with x,y, and r of -1 if not a circle
     circle ret = {-1,-1,-1};
     vector<possibleCenter> possCenters;
-    if (points.size() < (unsigned int)(imageWidth/40))//if too small to do calculations on, immediately returns that not a circle
+    if (points.size() < (unsigned int)(imageWidth/20))//if too small to do calculations on, immediately returns that not a circle
         return ret;
     point p1, p2 ,p3;
     precisePoint centerCandidate;
@@ -79,11 +79,22 @@ circle outline::isCircle(){//return circle with x,y, and r of -1 if not a circle
     return ret;
 }
 
-circle whereBall(CImg<UINT8>& image){
+bool hsv::compareToColor(float colorH, float maxHVariance, float minS){
+    if (abs(h - colorH) > maxHVariance)
+        return false;
+    if (s < minS)
+        return false;
+    return true;
+}
+
+vector<circle> whereBall(CImg<UINT8>& image){
     imageWidth = image.width();
-    image = threshhold(image, BALL_BLUE);
-    image.blur(imageWidth/300);
+    image = threshhold(image);
+    image.save("thresh.jpg");
+    image.blur(imageWidth/200);
+    image.save("blur.jpg");
     image = booleanEdgeDetect(image);
+    image.save("outline.jpg");
     vector<outline> outlines = findOutlines(image);
     vector<circle> circles;
     circle c;
@@ -93,18 +104,7 @@ circle whereBall(CImg<UINT8>& image){
             circles.push_back(c);
         }
     }
-    if (circles.empty()){
-        c = {-1,-1,-1};
-        return c;
-    }
-    //else
-    c.r = -1;
-    for (unsigned int i = 0; i < circles.size(); ++i){
-        if (circles[i].r > c.r){
-            c = circles[i];
-        }
-    }
-    return c;
+    return circles;
 }
 
 
@@ -123,14 +123,14 @@ inline void setRgb(CImg<UINT8>& image,int x ,int y, rgb color){
     image(x,y,2) = color.b;
 }
 
-CImg<UINT8> threshhold(CImg<UINT8>& image, hsv color){
+CImg<UINT8> threshhold(CImg<UINT8>& image){
     rgb pixel;
-    CImg<UINT8> finalImage(image.width(), image.height(),1,3,0);
+    CImg<UINT8> finalImage(image.width(), image.height(),1,1,0);
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compare(color, 100.0f, 0.25f)){///*************currently configured for logitec webcam *******************************************************check this (origonal(15.0,0.25))
-                setRgb(finalImage,x,y,WHITE);
+            if (pixel.getHsv().compareToColor(ballHValue,25,0.2)){
+                finalImage(x,y,0) = 255;
             }
         }
     }
@@ -140,10 +140,13 @@ CImg<UINT8> threshhold(CImg<UINT8>& image, hsv color){
 // algorithm from http://www.cs.rit.edu/~ncs/color/t_convert.html
 hsv rgb::getHsv()
 {
+    float r_ = ((float)r)/255.0f;
+    float g_ = ((float)g)/255.0f;
+    float b_ = ((float)b)/255.0f;
     hsv ret;
 	float min, max, delta;
-	min = MIN3( r, g, b );
-	max = MAX3( r, g, b );
+	min = MIN3( r_, g_, b_ );
+	max = MAX3( r_, g_, b_ );
 	ret.v = max;				// v
 	delta = max - min;
 	if( max != 0 )
@@ -154,12 +157,12 @@ hsv rgb::getHsv()
 		ret.h = -1;
 		return ret;
 	}
-	if( r == max )
-		ret.h = ( g - b ) / delta;		// between yellow & magenta
+	if( r_ == max )
+		ret.h = ( g_ - b_ ) / delta;		// between yellow & magenta
 	else if( g == max )
-		ret.h = 2 + ( b - r ) / delta;	// between cyan & yellow
+		ret.h = 2 + ( b_ - r_ ) / delta;	// between cyan & yellow
 	else
-		ret.h = 4 + ( r - g ) / delta;	// between magenta & cyan
+		ret.h = 4 + ( r_ - g_ ) / delta;	// between magenta & cyan
 	ret.h *= 60;				// degrees
 	if( ret.h < 0 )
 		ret.h += 360;

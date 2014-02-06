@@ -52,6 +52,7 @@ struct hsv{
     float s;
     float v;
     bool compare(hsv other, float maxHVariance, float maxSVariance);//Consider making other a reference
+    bool compareToColor(float h, float maxHVariance, float minS);
 };
 
 
@@ -91,14 +92,14 @@ struct line{//ax+by+c=0
 // All 3 defined in findCircle.cpp
 extern rgb WHITE; 
 extern rgb BLACK;
-extern hsv BALL_BLUE;//used to compare against during threshholding
+extern float ballHValue;
 
 
 extern const UINT8 red[3];//this is an array instead of an rgb struct so it can be used with the cimg draw_circle(function)
 
 extern int imageWidth;//used because some operations need to work proportional to image size
 
-CImg<UINT8> threshhold(CImg<UINT8>& image, hsv color); //uint8_t 
+CImg<UINT8> threshhold(CImg<UINT8>& image); //uint8_t 
 
 inline int abs(int num){return (num < 0)?-num:num;};//math.h only has fabs() for doubles
 
@@ -122,8 +123,8 @@ precisePoint findEquidistant(point p1, point p2, point p3);
 
 inline float square(float num){return num * num;}
 
-circle whereBall(CImg<UINT8>& image);
+vector<circle> whereBall(CImg<UINT8>& image);
 
-inline int MIN3(int x, int y, int z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}
+inline float MIN3(float x, float y, float z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}
 
-inline int MAX3(int x,int y,int z)  {return (y >= z ? (x >= y ? x : y) : (x >= z ? x : z));}
+inline float MAX3(float x,float y,float z)  {return (y >= z ? (x >= y ? x : y) : (x >= z ? x : z));}
