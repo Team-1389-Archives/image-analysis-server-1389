@@ -4,3 +4,6 @@ findCircleTest
 *.swp
 *~
 streamingMain
+autoCalibrate
+displayThresh
+threshholdTest

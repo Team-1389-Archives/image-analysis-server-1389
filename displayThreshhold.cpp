@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include "findCircle.h"
 #include "cv.h"
+#include <sstream>
 //#define cimg_use_jpeg 1
 //#include "loadCameraModded.h"
 
@@ -36,7 +37,14 @@ static void load_cam(CImg<UINT8> &image, CvCapture *camera){
 }
 
 int main(int argc, char ** argv){
-    CvCapture *camera=cvCreateCameraCapture();
+    
+    stringstream ss;
+    
+    ss << argv[1];
+    
+    ss >> ballHValue; 
+
+    CvCapture *camera=cvCreateCameraCapture(3);
     //cvSetCaptureProperty(camera, CV_CAP_PROP_FRAME_WIDTH, 100);
 
     if(camera==NULL){
@@ -54,23 +62,12 @@ int main(int argc, char ** argv){
 
     CImg<UINT8> modifiedImage;
 
-    vector<circle> circles;
-
     while(!disp.is_closed()){
         load_cam(image, camera);
-        modifiedImage = image;
-        circles = whereBall(modifiedImage);
 
-        //image = threshhold(image, BALL_BLUE);
-        //image = image.blur(image.width()/300);
-        //cout << "width:" << image.width() /80 << endl;
-        //image = booleanEdgeDetect(image);
+        image = threshhold(image);
 
-        //if (c.x != -1)
-          //  cout << c.x << " " << c.y << " " << c.r << endl;
-        for (unsigned int i = 0; i < circles.size(); i++){
-            image.draw_circle(circles[i].x,circles[i].y,circles[i].r,red);
-        }
+
         image.display(disp);
     }
 

@@ -3,7 +3,7 @@
 int main(int argc, char ** argv){
     CImg<UINT8> image(argv[1]);
     CImg<UINT8> backup = image;
-
+    /*
     vector<circle> circles;
    	circles = whereBall(image);
 
@@ -12,6 +12,9 @@ int main(int argc, char ** argv){
     }
 
     backup.save("output.jpg");
+    */
 
+    image = threshhold(image);
+    image.save_jpeg("threshhold.jpg");
     return 0;   
 }

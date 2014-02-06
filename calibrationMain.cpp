@@ -14,19 +14,19 @@ const uint8_t RED[3] = {0,255,0};
 int main(){
 
     CImg<uint8_t> origImage;
-    origImage.load_camera();
+    origImage.load_camera(3);
     CImg<uint8_t> image = origImage;
 
     CImgDisplay disp(image, "click when ball is in front of camera");
 
     while (!disp.button()) {
         //disp.wait();
-        origImage.load_camera();
+        origImage.load_camera(3);
         origImage.display(disp);
     }
 
     while (disp.button()) {
-        origImage.load_camera();
+        origImage.load_camera(3);
         origImage.display(disp);
     }
 
