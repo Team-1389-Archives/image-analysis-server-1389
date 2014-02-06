@@ -1,7 +1,7 @@
 #include "findCircle.h"
 rgb WHITE={255,255,255};
 rgb BLACK={0,0,0};
-hsv BALL_BLUE = {220,0.5,.5};//calibrated using logitech webcam
+float ballHValue = 220;
 int imageWidth;
 const UINT8 red[3] = {255,0,0};
 
@@ -30,7 +30,7 @@ bool possibleCenter::compare(precisePoint p, float radius){
 circle outline::isCircle(){//return circle with x,y, and r of -1 if not a circle
     circle ret = {-1,-1,-1};
     vector<possibleCenter> possCenters;
-    if (points.size() < (unsigned int)(imageWidth/40))//if too small to do calculations on, immediately returns that not a circle
+    if (points.size() < (unsigned int)(imageWidth/20))//if too small to do calculations on, immediately returns that not a circle
         return ret;
     point p1, p2 ,p3;
     precisePoint centerCandidate;
@@ -79,23 +79,22 @@ circle outline::isCircle(){//return circle with x,y, and r of -1 if not a circle
     return ret;
 }
 
-bool hsv::compareToColor(float colorH, float maxHVariance, float minS, float minv, float maxV){
+bool hsv::compareToColor(float colorH, float maxHVariance, float minS){
     if (abs(h - colorH) > maxHVariance)
         return false;
     if (s < minS)
         return false;
-    if (v < minv)
-        return false;
-    if (v > maxV)
-        return false;
     return true;
 }
 
-circle whereBall(CImg<UINT8>& image){
+vector<circle> whereBall(CImg<UINT8>& image){
     imageWidth = image.width();
-    image = threshhold(image, BALL_BLUE);
-    //image.blur_median(imageWidth/300);
+    image = threshhold(image);
+    image.save("thresh.jpg");
+    image.blur(imageWidth/200);
+    image.save("blur.jpg");
     image = booleanEdgeDetect(image);
+    image.save("outline.jpg");
     vector<outline> outlines = findOutlines(image);
     vector<circle> circles;
     circle c;
@@ -105,18 +104,7 @@ circle whereBall(CImg<UINT8>& image){
             circles.push_back(c);
         }
     }
-    if (circles.empty()){
-        c = {-1,-1,-1};
-        return c;
-    }
-    //else
-    c.r = -1;
-    for (unsigned int i = 0; i < circles.size(); ++i){
-        if (circles[i].r > c.r){
-            c = circles[i];
-        }
-    }
-    return c;
+    return circles;
 }
 
 
@@ -135,14 +123,14 @@ inline void setRgb(CImg<UINT8>& image,int x ,int y, rgb color){
     image(x,y,2) = color.b;
 }
 
-CImg<UINT8> threshhold(CImg<UINT8>& image, hsv color){
+CImg<UINT8> threshhold(CImg<UINT8>& image){
     rgb pixel;
-    CImg<UINT8> finalImage(image.width(), image.height(),1,3,0);
+    CImg<UINT8> finalImage(image.width(), image.height(),1,1,0);
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compareToColor(220,25,0.2,0.2,0.8)){
-                setRgb(finalImage,x,y,WHITE);
+            if (pixel.getHsv().compareToColor(ballHValue,25,0.2)){
+                finalImage(x,y,0) = 255;
             }
         }
     }
