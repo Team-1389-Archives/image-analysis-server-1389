@@ -6,7 +6,7 @@ if [ -z $CXX ]; then
                 CXX="/usr/bin/env g++"
         fi
 fi
-if [ $1 == 'profile' ]; then
+if [ "$1" == 'profile' ]; then
     PROFILING_FLAGS='-pg'
 fi
 if [ -d /usr/lib/arm-linux-gnueabi/ ]; then
