@@ -91,11 +91,8 @@ bool hsv::compareToColor(float colorH, float maxHVariance, float minS){
 vector<circle> whereBall(CImg<UINT8>& image){
     imageWidth = image.width();
     image = threshhold(image);
-    image.save("thresh.jpg");
-    image.blur(imageWidth/200);
-    image.save("blur.jpg");
+    image.blur(imageWidth/100);
     image = booleanEdgeDetect(image);
-    image.save("outline.jpg");
     vector<outline> outlines = findOutlines(image);
     vector<circle> circles;
     circle c;
@@ -130,7 +127,7 @@ CImg<UINT8> threshhold(CImg<UINT8>& image){
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compareToColor(10, 15, 0.4)){
+            if (pixel.getHsv().compareToColor(10, 30, 0.4)){ //for red 10, 30, 0.4             for blue 150, 70, 0.1
                 finalImage(x,y,0) = 255;
             }
         }
