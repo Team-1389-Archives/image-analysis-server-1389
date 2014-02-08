@@ -67,7 +67,7 @@ int main(){
         //image = booleanEdgeDetect(image);
 
         if (c.x != -1)
-            cout << "3" << " " << c.y << " " << c.r << endl;
+            cout << c.x << " " << c.y << " " << c.r << endl;
         image.draw_circle(c.x,c.y,c.r,red);
         image.display(disp);
     }
