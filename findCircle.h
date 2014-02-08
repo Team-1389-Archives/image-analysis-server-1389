@@ -51,7 +51,7 @@ struct hsv{
     float h;
     float s;
     float v;
-    bool compare(hsv other, float maxHVariance, float maxSVariance);//Consider making other a reference
+    bool compare(hsv other, float maxDistance);//Consider making other a reference
     bool compareToColor(float h, float maxHVariance, float minS);
 };
 
@@ -93,6 +93,7 @@ struct line{//ax+by+c=0
 extern rgb WHITE; 
 extern rgb BLACK;
 extern float ballHValue;
+extern hsv BALL_BLUE;
 
 
 extern const UINT8 red[3];//this is an array instead of an rgb struct so it can be used with the cimg draw_circle(function)

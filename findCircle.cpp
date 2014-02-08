@@ -4,6 +4,7 @@ rgb BLACK={0,0,0};
 float ballHValue = 220;
 int imageWidth;
 const UINT8 red[3] = {255,0,0};
+hsv BALL_BLUE = {15, 0.75, 0.8};
 
 float precisePoint::distanceTo(point p){
     return sqrt(         square((((float) p.x ) - x))     +    square((((float) p.y ) - y))          );
@@ -129,7 +130,7 @@ CImg<UINT8> threshhold(CImg<UINT8>& image){
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compareToColor(ballHValue,25,0.2)){
+            if (pixel.getHsv().compareToColor(10, 15, 0.4)){
                 finalImage(x,y,0) = 255;
             }
         }
@@ -144,35 +145,40 @@ hsv rgb::getHsv()
     float g_ = ((float)g)/255.0f;
     float b_ = ((float)b)/255.0f;
     hsv ret;
-	float min, max, delta;
-	min = MIN3( r_, g_, b_ );
-	max = MAX3( r_, g_, b_ );
-	ret.v = max;				// v
-	delta = max - min;
-	if( max != 0 )
-		ret.s = delta / max;		// s
-	else {
-		// r = g = b = 0		// s = 0, v is undefined
-		ret.s = 0;
-		ret.h = -1;
-		return ret;
-	}
-	if( r_ == max )
-		ret.h = ( g_ - b_ ) / delta;		// between yellow & magenta
-	else if( g == max )
-		ret.h = 2 + ( b_ - r_ ) / delta;	// between cyan & yellow
-	else
-		ret.h = 4 + ( r_ - g_ ) / delta;	// between magenta & cyan
-	ret.h *= 60;				// degrees
-	if( ret.h < 0 )
-		ret.h += 360;
+    float min, max, delta;
+    min = MIN3( r_, g_, b_ );
+    max = MAX3( r_, g_, b_ );
+    ret.v = max;                // v
+    delta = max - min;
+    if( max != 0 )
+        ret.s = delta / max;        // s
+    else {
+        // r = g = b = 0        // s = 0, v is undefined
+        ret.s = 0;
+        ret.h = -1;
+        return ret;
+    }
+    if( r_ == max )
+        ret.h = ( g_ - b_ ) / delta;        // between yellow & magenta
+    else if( g_ == max )
+        ret.h = 2 + (( b_ - r_ ) / delta);  // between cyan & yellow
+    else
+        ret.h = 4 + ( r_ - g_ ) / delta;    // between magenta & cyan
+    ret.h *= 60;                // degrees
+    if( ret.h < 0 )
+        ret.h += 360;
     return ret;
 }
 //Are you using variance http://en.wikipedia.org/wiki/Variance#Definition You may want to rename the variable if you're not. This is probably nit-picky, but since we will be dealing with statistics, it may end up being confusing.
-bool hsv::compare(hsv other, float maxHVariance, float maxSVariance){
-    if (abs(h - other.h) > maxHVariance)
+bool hsv::compare(hsv other, float maxDistance){
+    if (v > other.v)
         return false;
-    if (abs(s - other.s) > maxSVariance)
+    float deltaH = abs(other.h - h);
+    if (deltaH > 180)
+        deltaH = 360 - deltaH;
+    float deltaS = abs(s - other.s);
+    float dist = deltaH / 90 + deltaS;
+    if (dist > maxDistance)
         return false;
     return true;
 }
