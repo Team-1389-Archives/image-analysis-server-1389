@@ -105,7 +105,13 @@ vector<circle> whereBall(CImg<UINT8>& image){
     return circles;
 }
 
-
+bool rgb::isBlue(){//0.2989, 0.5870, 0.1140.
+    if (r > b)
+        return false;
+    if (g > 1.5f*b)
+        return false;
+    return true;
+}
 
 inline rgb getRgb(CImg<UINT8>& image,int x ,int y){//Here you use references, why not in other places? Be careful about using unsigned char. Since you want an unsigned 8-bit integer, consider using uint8_t instead.
     rgb pixel;
@@ -127,9 +133,10 @@ CImg<UINT8> threshhold(CImg<UINT8>& image){
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compareToColor(10, 30, 0.4)){ //for red 10, 30, 0.4             for blue 150, 70, 0.1
+            if (pixel.getHsv().compareToColor(145, 65, 0.1)) //for red 10, 30, 0.4             for blue 150, 70, 0.1
                 finalImage(x,y,0) = 255;
-            }
+            //if (pixel.isBlue())
+              //  finalImage(x,y,0) = 255;
         }
     }
     return finalImage;

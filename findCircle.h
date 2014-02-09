@@ -45,6 +45,7 @@ struct rgb{
     UINT8 g;
     UINT8 b;
     hsv getHsv();//gets equivilent hsv
+    bool isBlue();
 };
 
 struct hsv{
