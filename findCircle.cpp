@@ -5,6 +5,7 @@ BallFinder::BallFinder(){
     BLACK={0,0,0};
     ballHValue = 220;
     BALL_BLUE = {15, 0.75, 0.8};
+    colors = NULL;
 }
 
 float precisePoint::distanceTo(point p){
@@ -116,11 +117,13 @@ bool rgb::isBlue(){
 
 CImg<UINT8> BallFinder::threshhold(CImg<UINT8>& image){
     rgb pixel;
+    hsv pixelHsv;
     CImg<UINT8> finalImage(image.width(), image.height(),1,1,0);
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compareToColor(150, 70, 0.1)) //for red 17, 8, 0.4            for blue 150, 70, 0.1
+            pixelHsv = pixel.getHsv();
+            if (colors->getColor(pixelHsv.h, pixelHsv.v)) //for red 17, 8, 0.4            for blue 150, 70, 0.1
                 finalImage(x,y,0) = 255;
             //if (pixel.isBlue())
               //  finalImage(x,y,0) = 255;
@@ -319,4 +322,20 @@ void ColorGrid::display(){
         }
         cout << endl;
     }
+}
+
+BallFinder::~BallFinder(){
+    if (colors != NULL)
+        delete[] colors;
+    colors = NULL;
+}
+
+void BallFinder::setColorGrid(ColorGrid* newColors){
+    if (colors != NULL)
+        delete[] colors;
+    colors = newColors;
+}
+
+ColorGrid* BallFinder::getColorGrid(){
+    return colors;
 }

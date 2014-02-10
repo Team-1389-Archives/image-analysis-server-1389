@@ -1,3 +1,9 @@
+#ifdef FINDCIRCLE_H
+#error redefine
+#endif
+
+#define FINDCIRCLE_H
+
 #include <stdint.h>
 typedef uint8_t UINT8;
 #include <iostream>
@@ -91,8 +97,20 @@ struct line{//ax+by+c=0
 };
 
 class BallFinder{
+    rgb WHITE; 
+    rgb BLACK;
+    float ballHValue;
+    hsv BALL_BLUE;
+    int imageWidth;//used because some operations need to work proportional to image size
+    ColorGrid* colors;
 public:
     BallFinder();
+    
+    ~BallFinder();
+    
+    void setColorGrid(ColorGrid* newColors);
+    
+    ColorGrid * getColorGrid();
 
     CImg<UINT8> threshhold(CImg<UINT8>& image); //uint8_t 
 
@@ -105,13 +123,6 @@ public:
     void dispOutlines(CImg<UINT8>& image, vector<outline> outlines);
 
     vector<circle> whereBall(CImg<UINT8>& image);
-
-private:
-    rgb WHITE; 
-    rgb BLACK;
-    float ballHValue;
-    hsv BALL_BLUE;
-    int imageWidth;//used because some operations need to work proportional to image size
 };
 
 class ColorGrid{
