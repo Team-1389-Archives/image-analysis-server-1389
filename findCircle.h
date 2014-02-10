@@ -24,6 +24,8 @@ struct possibleCenter;
 struct circle;
 struct line;
 struct precisePoint;
+class ColorGrid;
+class BallFinder;
 
 
 struct precisePoint{
@@ -110,6 +112,15 @@ private:
     float ballHValue;
     hsv BALL_BLUE;
     int imageWidth;//used because some operations need to work proportional to image size
+};
+
+class ColorGrid{
+public:
+    ColorGrid();
+    void setColor(float h, float s, bool value);
+    bool getColor(float h, float s);
+    void display();
+    array<array<bool, 10>, 36> colors;
 };
 
 inline float MIN3(float x, float y, float z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}

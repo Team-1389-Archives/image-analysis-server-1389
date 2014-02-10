@@ -1,4 +1,5 @@
-#define cimg_use_opencv
+//#define cimg_use_opencv  //when display
+#define cimg_use_display 1;
 
 #include "CImg.h"
 #include <iostream>
@@ -14,21 +15,29 @@ const uint8_t RED[3] = {0,255,0};
 int main(){
 
     CImg<uint8_t> origImage;
-    origImage.load_camera();
-    CImg<uint8_t> image = origImage;
+
+
+
+    //origImage.load_camera();  //turn on when load from camera
+    origImage.load_jpeg("calibrate.jpg");
+
+
+
+    CImg<uint8_t> image = origImage;//turn on when from jpg
 
     CImgDisplay disp(image, "click when ball is in front of camera");
 
-    while (!disp.button()) {
+    /*
+    while (!disp.button()) {  //turn on when camera
         //disp.wait();
         origImage.load_camera();
         origImage.display(disp);
     }
 
-    while (disp.button()) {
+    while (disp.button()) {   //turn on when camera
         origImage.load_camera();
         origImage.display(disp);
-    }
+    }*/
 
     disp.set_title("click top left");
 
@@ -52,37 +61,17 @@ int main(){
 
     while (disp.button()) {}
 
-    long totalR = 0, totalG = 0, totalB = 0, r = 0, g = 0, b = 0;
+    ColorGrid colors;
+    hsv pixelColor;
 
     for (int x = x1; x <= x2; ++x){
         for (int y = y1; y <= y2; ++y){
-            totalR += origImage(x,y,0);
-            totalG += origImage(x,y,1);
-            totalB += origImage(x,y,2);
+            pixelColor = getRgb(origImage,x,y).getHsv();
+            colors.setColor(pixelColor.h, pixelColor.s, true);
         }
     }
 
-    int area = (x2 - x1 + 1) * (y2 - y1 + 1);
-    r = totalR/area;
-    g = totalG/area;
-    b = totalB/area;
-
-    rgb rgbColor;
-    rgbColor.r = r;
-    rgbColor.g = g;
-    rgbColor.b = b;
-
-    hsv hsvColor = rgbColor.getHsv();
-
-    cout << "Average hsv:" << endl;
-    cout << "H:" << hsvColor.h << endl;
-    cout << "S:" << hsvColor.s << endl;
-    cout << "V:" << hsvColor.v << endl;
-
-    cout << "Average rgb:" << endl;
-    cout << "R:" << r << endl;
-    cout << "G:" << g << endl;
-    cout << "B:" << b << endl;
+    colors.display();
 
     return 0;
 }

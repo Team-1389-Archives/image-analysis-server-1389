@@ -291,3 +291,32 @@ precisePoint findEquidistant(point p1, point p2, point p3){
    line l2 = findPerpendicularLine(p2,p3);
    return findIntersection(l1,l2);
 }
+
+ColorGrid::ColorGrid(){
+    for (unsigned int i = 0; i < colors.size(); i++){
+        colors[i].fill(0);
+    }
+}
+
+void ColorGrid::setColor(float h, float s, bool value){
+    if (!(h >= 0.0f && h <= 360.0f))//just in case
+        return;
+    if (!(s >= 0.0f && s <= 1.0f))
+        return;
+    if (s == 1.0f)//very rare, but would cause it to go out of index
+        s = 0.9f;
+    colors[(int)h / 10][(int)(10.0f * s)] = value;
+}
+
+bool ColorGrid::getColor(float h, float s){
+    return colors[(int)h / 10][(int)(10.0f * s)];
+}
+
+void ColorGrid::display(){
+    for (int i = 0; i < 10; i++){
+        for (int j = 0; j < 36; j++){
+            cout << colors[j][i];
+        }
+        cout << endl;
+    }
+}
