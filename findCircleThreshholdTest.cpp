@@ -3,6 +3,9 @@
 #include <string>
 
 int main(int argc, char ** argv){
+    BallFinder finder;
+    unsigned char green[3] = {0,255,0};
+
     CImg<UINT8> image;
     CImg<UINT8> orig;
     stringstream ss;
@@ -19,28 +22,28 @@ int main(int argc, char ** argv){
    	    image.load_jpeg(("../TestImages/Image-" + imageNum + ".jpg").c_str());
         orig = image;
 
-   	    image = threshhold(image);
+   	    image = finder.threshhold(image);
         image.save_jpeg(("../threshholdOutputImages/ThreshedImage-" + imageNum + ".jpg").c_str());
 
-        image.blur(image.width()/100);
+        image.blur(image.width()/100);  //minimal blurring needed for red, width/200 for blue
         image.save_jpeg(("../blurredOutputImages/BlurredImage-" + imageNum + ".jpg").c_str());
 
-        image = booleanEdgeDetect(image);
+        image = finder.booleanEdgeDetect(image);
         image.save_jpeg(("../edgedOutputImages/EdgedImage-" + imageNum + ".jpg").c_str());
 
-        outlines = findOutlines(image);
+        outlines = finder.findOutlines(image);
 
         circles.clear();
 
         for (unsigned int i = 0; i < outlines.size(); ++i){
-          c = outlines[i].isCircle();
+          c = outlines[i].isCircle(image.width());
           if (c.r != -1){
             circles.push_back(c);
           }
         }
 
         for (unsigned int i = 0; i < circles.size(); i++){
-          orig.draw_circle((int)circles[i].x,(int)circles[i].y,(int)circles[i].r, red, 0.5);
+          orig.draw_circle((int)circles[i].x,(int)circles[i].y,(int)circles[i].r, green, 0.5);
         }
 
         orig.save_jpeg(("../circleOutputImages/CircleImage-" + imageNum + ".jpg").c_str());

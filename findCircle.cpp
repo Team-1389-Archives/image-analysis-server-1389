@@ -1,10 +1,11 @@
 #include "findCircle.h"
-rgb WHITE={255,255,255};
-rgb BLACK={0,0,0};
-float ballHValue = 220;
-int imageWidth;
-const UINT8 red[3] = {255,0,0};
-hsv BALL_BLUE = {15, 0.75, 0.8};
+
+BallFinder::BallFinder(){
+    WHITE={255,255,255};
+    BLACK={0,0,0};
+    ballHValue = 220;
+    BALL_BLUE = {15, 0.75, 0.8};
+}
 
 float precisePoint::distanceTo(point p){
     return sqrt(         square((((float) p.x ) - x))     +    square((((float) p.y ) - y))          );
@@ -28,10 +29,10 @@ bool possibleCenter::compare(precisePoint p, float radius){
     return isCloseEnough;
 };
 
-circle outline::isCircle(){//return circle with x,y, and r of -1 if not a circle
+circle outline::isCircle(int imageWidth){//return circle with x,y, and r of -1 if not a circle
     circle ret = {-1,-1,-1};
     vector<possibleCenter> possCenters;
-    if (points.size() < (unsigned int)(imageWidth/20))//if too small to do calculations on, immediately returns that not a circle
+    if (points.size() < (unsigned int)(imageWidth/50))//if too small to do calculations on, immediately returns that not a circle
         return ret;
     point p1, p2 ,p3;
     precisePoint centerCandidate;
@@ -67,7 +68,7 @@ circle outline::isCircle(){//return circle with x,y, and r of -1 if not a circle
     }
     int whichCenter = -1;
     for (unsigned int k = 0; k < possCenters.size(); ++k){
-        if (possCenters[k].corroborations > ((int)points.size() / 2)){//if more than half of centers corroborate each other
+        if (possCenters[k].corroborations > ((int)points.size() / 2)){//if more than half of centers corroborate each other   //original: /2
             whichCenter = k;
             break;
         }
@@ -88,7 +89,7 @@ bool hsv::compareToColor(float colorH, float maxHVariance, float minS){
     return true;
 }
 
-vector<circle> whereBall(CImg<UINT8>& image){
+vector<circle> BallFinder::whereBall(CImg<UINT8>& image){
     imageWidth = image.width();
     image = threshhold(image);
     image.blur(imageWidth/100);
@@ -97,7 +98,7 @@ vector<circle> whereBall(CImg<UINT8>& image){
     vector<circle> circles;
     circle c;
     for (unsigned int i = 0; i < outlines.size(); ++i){
-        c = outlines[i].isCircle();
+        c = outlines[i].isCircle(imageWidth);
         if (c.r != -1){
             circles.push_back(c);
         }
@@ -105,7 +106,7 @@ vector<circle> whereBall(CImg<UINT8>& image){
     return circles;
 }
 
-bool rgb::isBlue(){//0.2989, 0.5870, 0.1140.
+bool rgb::isBlue(){
     if (r > b)
         return false;
     if (g > 1.5f*b)
@@ -113,27 +114,13 @@ bool rgb::isBlue(){//0.2989, 0.5870, 0.1140.
     return true;
 }
 
-inline rgb getRgb(CImg<UINT8>& image,int x ,int y){//Here you use references, why not in other places? Be careful about using unsigned char. Since you want an unsigned 8-bit integer, consider using uint8_t instead.
-    rgb pixel;
-    pixel.r = image(x,y,0);
-    pixel.g = image(x,y,1);
-    pixel.b = image(x,y,2);
-    return pixel;
-}
-
-inline void setRgb(CImg<UINT8>& image,int x ,int y, rgb color){
-    image(x,y,0) = color.r;
-    image(x,y,1) = color.g;
-    image(x,y,2) = color.b;
-}
-
-CImg<UINT8> threshhold(CImg<UINT8>& image){
+CImg<UINT8> BallFinder::threshhold(CImg<UINT8>& image){
     rgb pixel;
     CImg<UINT8> finalImage(image.width(), image.height(),1,1,0);
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compareToColor(145, 65, 0.1)) //for red 10, 30, 0.4             for blue 150, 70, 0.1
+            if (pixel.getHsv().compareToColor(150, 70, 0.1)) //for red 17, 8, 0.4            for blue 150, 70, 0.1
                 finalImage(x,y,0) = 255;
             //if (pixel.isBlue())
               //  finalImage(x,y,0) = 255;
@@ -187,7 +174,7 @@ bool hsv::compare(hsv other, float maxDistance){
     return true;
 }
 
-CImg<unsigned char> booleanEdgeDetect(CImg<unsigned char>& image){
+CImg<unsigned char> BallFinder::booleanEdgeDetect(CImg<unsigned char>& image){
     CImg<unsigned char> edges(image.width(),image.height(),1,3,0);
 
     bool isEdge;
@@ -219,7 +206,7 @@ CImg<unsigned char> booleanEdgeDetect(CImg<unsigned char>& image){
     return edges;
 }
 
-outline floodfill(CImg<UINT8>& image, int startX, int startY){
+outline BallFinder::floodfill(CImg<UINT8>& image, int startX, int startY){
     outline ret;
     point currentPoint;
     vector<point> possiblePoints;//I like that you didn't use the stack, and used a vector instead.
@@ -251,7 +238,7 @@ outline floodfill(CImg<UINT8>& image, int startX, int startY){
     return ret;
 }
 
-vector<outline> findOutlines(CImg<UINT8> image){
+vector<outline> BallFinder::findOutlines(CImg<UINT8> image){
     vector<outline> outlines;
     for (int x = 0; x < image.width() - 1; ++x){
         for (int y = 0; y< image.height() - 1; y++){
@@ -263,7 +250,7 @@ vector<outline> findOutlines(CImg<UINT8> image){
     return outlines;
 }
 
-void dispOutlines(CImg<UINT8>& image, vector<outline> outlines){
+void BallFinder::dispOutlines(CImg<UINT8>& image, vector<outline> outlines){
     rgb color;
     for (unsigned int i = 0; i < outlines.size(); ++i){
         color.r = rand() % 255;

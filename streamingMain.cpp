@@ -36,7 +36,9 @@ static void load_cam(CImg<UINT8> &image, CvCapture *camera){
 }
 
 int main(){
-    CvCapture *camera=cvCreateCameraCapture(0);
+    unsigned char GREEN[] = {0,255,0};
+
+    CvCapture *camera=cvCreateCameraCapture(3);
     //cvSetCaptureProperty(camera, CV_CAP_PROP_FRAME_WIDTH, 100);
 
     if(camera==NULL){
@@ -53,22 +55,31 @@ int main(){
     image.display(disp);
 
     CImg<UINT8> modifiedImage;
+    
+    BallFinder finder;
 
-    circle c;
+    vector<circle> cs;
+    circle biggest;
 
-    while(!disp.is_closed()){
+    while(true/*!disp.is_closed()*/){
         load_cam(image, camera);
         modifiedImage = image;
-        c = whereBall(modifiedImage);
+        cs = finder.whereBall(modifiedImage);
+        biggest.r = -1;
+        for (unsigned int i = 0; i < cs.size(); i++){//find biggest circle
+            if (cs[i].r > biggest.r)
+                biggest = cs[i];
+        }
+        
 
         //image = threshhold(image, BALL_BLUE);
         //image = image.blur(image.width()/300);
         //cout << "width:" << image.width() /80 << endl;
         //image = booleanEdgeDetect(image);
 
-        if (c.x != -1)
-            cout << c.x << " " << c.y << " " << c.r << endl;
-        image.draw_circle(c.x,c.y,c.r,red);
+        if (biggest.r != -1)
+            cout << biggest.x << " " << biggest.y << " " << biggest.r << endl;
+        image.draw_circle(biggest.x,biggest.y,biggest.r,GREEN);
         image.display(disp);
     }
 
