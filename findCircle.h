@@ -5,9 +5,7 @@ typedef uint8_t UINT8;
 #include <vector>
 #include <stdlib.h>
 #include <math.h>
-
-//#define cimg_use_jpeg 1
-
+#include <array>
 
 #ifndef cimg_display
 #define cimg_display 0
@@ -73,7 +71,7 @@ struct outline{
     void addPoint(point newPoint){
         points.push_back(newPoint);    // may want to move to findCircle.cpp, or even a file for small functions
     }
-    circle isCircle();
+    circle isCircle(int imageWidth);
 };
 
 struct possibleCenter{
@@ -90,43 +88,54 @@ struct line{//ax+by+c=0
     float c;
 };
 
-// All 3 defined in findCircle.cpp
-extern rgb WHITE; 
-extern rgb BLACK;
-extern float ballHValue;
-extern hsv BALL_BLUE;
+class BallFinder{
+public:
+    BallFinder();
 
+    CImg<UINT8> threshhold(CImg<UINT8>& image); //uint8_t 
 
-extern const UINT8 red[3];//this is an array instead of an rgb struct so it can be used with the cimg draw_circle(function)
+    CImg<unsigned char> booleanEdgeDetect(CImg<unsigned char>& image);//Be careful about returning a CImg object, since it may copy the object
 
-extern int imageWidth;//used because some operations need to work proportional to image size
+    vector<outline> findOutlines(CImg<UINT8> image);//Same worry about copying here (though I'm not sure if ti does end up copying)
 
-CImg<UINT8> threshhold(CImg<UINT8>& image); //uint8_t 
+    outline floodfill(CImg<UINT8>& image, int startX, int startY);
 
-inline int abs(int num){return (num < 0)?-num:num;};//math.h only has fabs() for doubles
+    void dispOutlines(CImg<UINT8>& image, vector<outline> outlines);
 
-inline rgb getRgb(CImg<unsigned char>& image,int x ,int y);//Why are some of these inline?
+    vector<circle> whereBall(CImg<UINT8>& image);
 
-inline void setRgb(CImg<unsigned char>& image,int x ,int y, rgb color); //shouldn't it be consistently UINT8?
+private:
+    rgb WHITE; 
+    rgb BLACK;
+    float ballHValue;
+    hsv BALL_BLUE;
+    int imageWidth;//used because some operations need to work proportional to image size
+};
 
-CImg<unsigned char> booleanEdgeDetect(CImg<unsigned char>& image);//Be careful about returning a CImg object, since it may copy the object
+inline float MIN3(float x, float y, float z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}
 
-vector<outline> findOutlines(CImg<UINT8> image);//Same worry about copying here (though I'm not sure if ti does end up copying)
+inline float MAX3(float x,float y,float z)  {return (y >= z ? (x >= y ? x : y) : (x >= z ? x : z));}
 
-outline floodfill(CImg<UINT8>& image, int startX, int startY);
+inline int abs(int num){return (num < 0)?-num:num;}//math.h only has fabs() for doubles
 
-void dispOutlines(CImg<UINT8>& image, vector<outline> outlines);
+inline rgb getRgb(CImg<UINT8>& image,int x ,int y){//Here you use references, why not in other places? Be careful about using unsigned char. Since you want an unsigned 8-bit integer, consider using uint8_t instead.
+    rgb pixel;
+    pixel.r = image(x,y,0);
+    pixel.g = image(x,y,1);
+    pixel.b = image(x,y,2);
+    return pixel;
+}
+
+inline void setRgb(CImg<UINT8>& image,int x ,int y, rgb color){
+    image(x,y,0) = color.r;
+    image(x,y,1) = color.g;
+    image(x,y,2) = color.b;
+}
+
+inline float square(float num){return num * num;}
 
 line findPerpendicularLine(point p1, point p2);
 
 precisePoint findIntersection(line l1, line l2);
 
 precisePoint findEquidistant(point p1, point p2, point p3);
-
-inline float square(float num){return num * num;}
-
-vector<circle> whereBall(CImg<UINT8>& image);
-
-inline float MIN3(float x, float y, float z){return (y <= z ? (x <= y ? x : y) : (x <= z ? x : z));}
-
-inline float MAX3(float x,float y,float z)  {return (y >= z ? (x >= y ? x : y) : (x >= z ? x : z));}
