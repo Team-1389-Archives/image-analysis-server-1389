@@ -1,3 +1,3 @@
 #!/bin/sh
-cd `dirname $0`/..
-exec ./streamingMain
+#cd `dirname $0`/..
+exec ../streamingMain
