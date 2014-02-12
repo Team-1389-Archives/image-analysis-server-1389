@@ -72,7 +72,6 @@ public:
         fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
         fmt.fmt.pix.field       = V4L2_FIELD_NONE;
         xioctl(fd, VIDIOC_S_FMT, &fmt);
-        cout<<fmt.fmt.pix.field<<endl;
         if (fmt.fmt.pix.pixelformat != V4L2_PIX_FMT_RGB24) {
             printf("Libv4l didn't accept RGB24 format. Can't proceed.\n");
             exit(EXIT_FAILURE);
@@ -82,7 +81,7 @@ public:
                    fmt.fmt.pix.width, fmt.fmt.pix.height);
 
         CLEAR(req);
-        req.count = 2;
+        req.count = 20;
         req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         req.memory = V4L2_MEMORY_MMAP;
         xioctl(fd, VIDIOC_REQBUFS, &req);
