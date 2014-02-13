@@ -26,7 +26,7 @@ inline void setRgb(CImg<UINT8>& image,int x ,int y, rgb color){
 inline float square(float num){return num * num;}
 
 BallFinder::BallFinder(){
-    ballHValue = 220;
+    ballHValue = 230;
 }
 
 float precisePoint::distanceTo(point p){
@@ -142,7 +142,7 @@ CImg<UINT8> BallFinder::threshhold(CImg<UINT8>& image){
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compareToColor(150, 70, 0.1)) //for red 17, 8, 0.4            for blue 150, 70, 0.1
+            if (pixel.getHsv().compareToColor(ballHValue, 60, 0.1)) //for red 17, 8, 0.4            for blue 150, 70, 0.1
                 finalImage(x,y,0) = 255;
             //if (pixel.isBlue())
               //  finalImage(x,y,0) = 255;

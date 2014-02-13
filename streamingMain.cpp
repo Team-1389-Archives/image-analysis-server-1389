@@ -49,19 +49,14 @@ int main(){
             if (cs[i].r > biggest.r)
                 biggest = cs[i];
         }
-        
-
-        //image = threshhold(image, BALL_BLUE);
-        //image = image.blur(image.width()/300);
-        //cout << "width:" << image.width() /80 << endl;
-        //image = booleanEdgeDetect(image);
 
         if (biggest.r != -1){
             cout << biggest.x << " " << biggest.y << " " << biggest.r << '\n';
             cout.flush();
         }
         image.draw_circle(biggest.x,biggest.y,biggest.r,GREEN);
-        image = finder.threshhold(image);
+        //image = finder.threshhold(image);
+        //image = finder.booleanEdgeDetect(image);
         image.display(disp);
     }
 
