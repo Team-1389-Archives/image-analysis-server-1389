@@ -21,7 +21,7 @@ int main(){
         cerr<<"Unable to open camera stream"<<endl;
         abort();
     }*/
-    Camera cam("/dev/video3", 640, 480);
+    Camera cam("/dev/video0", 640, 480);
     CImg<UINT8> image;
     
     cam.load(image);
@@ -38,7 +38,7 @@ int main(){
     vector<circle> cs;
     circle biggest;
 
-    while(true){
+    while(!disp.is_closed()){
         cam.load(image);
         image.resize_halfXY();
         
@@ -61,6 +61,7 @@ int main(){
             cout.flush();
         }
         image.draw_circle(biggest.x,biggest.y,biggest.r,GREEN);
+        image = finder.threshhold(image);
         image.display(disp);
     }
 
