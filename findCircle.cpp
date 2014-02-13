@@ -114,7 +114,7 @@ bool hsv::compareToColor(float colorH, float maxHVariance, float minS){
 vector<circle> BallFinder::whereBall(CImg<UINT8>& image){
     imageWidth = image.width();
     image = threshhold(image);
-    image.blur(imageWidth/100);
+    //image.blur(imageWidth/100);
     image = booleanEdgeDetect(image);
     vector<outline> outlines = findOutlines(image);
     vector<circle> circles;
@@ -142,7 +142,7 @@ CImg<UINT8> BallFinder::threshhold(CImg<UINT8>& image){
     for (int x = 0; x < image.width(); ++x){
         for (int y = 0; y < image.height(); ++y){
             pixel = getRgb(image, x, y);
-            if (pixel.getHsv().compareToColor(ballHValue, 60, 0.1)) //for red 17, 8, 0.4            for blue 150, 70, 0.1
+            if (pixel.getHsv().compareToColor(ballHValue, 70, 0.1)) //for red 17, 8, 0.4            for blue 150, 70, 0.1
                 finalImage(x,y,0) = 255;
             //if (pixel.isBlue())
               //  finalImage(x,y,0) = 255;

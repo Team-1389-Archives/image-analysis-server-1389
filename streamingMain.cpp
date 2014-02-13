@@ -48,14 +48,15 @@ int main(){
         for (unsigned int i = 0; i < cs.size(); i++){//find biggest circle
             if (cs[i].r > biggest.r)
                 biggest = cs[i];
+            image.draw_circle(cs[i].x,cs[i].y,cs[i].r,GREEN,0.5f);
         }
 
         if (biggest.r != -1){
             cout << biggest.x << " " << biggest.y << " " << biggest.r << '\n';
             cout.flush();
         }
-        image.draw_circle(biggest.x,biggest.y,biggest.r,GREEN);
         //image = finder.threshhold(image);
+        //image.blur(image.width()/100);
         //image = finder.booleanEdgeDetect(image);
         image.display(disp);
     }
