@@ -26,7 +26,7 @@ inline void setRgb(CImg<UINT8>& image,int x ,int y, rgb color){
 inline float square(float num){return num * num;}
 
 BallFinder::BallFinder(){
-    ballHValue = 230;
+    ballHValue = 220;
 }
 
 float precisePoint::distanceTo(point p){
@@ -182,16 +182,13 @@ hsv rgb::getHsv()
         ret.h += 360;
     return ret;
 }
-//Are you using variance http://en.wikipedia.org/wiki/Variance#Definition You may want to rename the variable if you're not. This is probably nit-picky, but since we will be dealing with statistics, it may end up being confusing.
-bool hsv::compare(hsv other, float maxDistance){
-    if (v > other.v)
+
+bool hsv::compare(hsv other, float maxHDist, float maxSDist, float maxVDist){
+    if (abs(other.h - h) > maxHDist)
         return false;
-    float deltaH = abs(other.h - h);
-    if (deltaH > 180)
-        deltaH = 360 - deltaH;
-    float deltaS = abs(s - other.s);
-    float dist = deltaH / 90 + deltaS;
-    if (dist > maxDistance)
+    if (abs(other.s - s) > maxSDist)
+        return false;
+    if (abs(other.v - v) > maxVDist)
         return false;
     return true;
 }
@@ -312,4 +309,60 @@ precisePoint findEquidistant(point p1, point p2, point p3){
    line l1 = findPerpendicularLine(p1,p2);
    line l2 = findPerpendicularLine(p2,p3);
    return findIntersection(l1,l2);
+}
+
+void BallFinder::floodFillObject(int x, int y, CImg<uint8_t>& image, CImg<uint8_t>& outputImage){//warning: return image has some 1's in it instead of 0's. this is necessary for efficiency. treat the 1's as 0's.
+    //if (outputImage.width() == 0)//means that nothing is stored in outputImage
+        //outputImage = CImg<uint8_t>(image.width(), image.height(),1,1,0);
+
+    point currentPoint;
+    hsv currentHsv;
+    vector<point> possiblePoints;
+    vector<hsv> correspondingHsv;//represents hsv that possiblePoint needs to be compared to
+    possiblePoints.push_back(point(x, y));
+    correspondingHsv.push_back(getRgb(image, x, y).getHsv());
+    while(!possiblePoints.empty()){
+        currentPoint = possiblePoints[possiblePoints.size()-1];
+        currentHsv = correspondingHsv[correspondingHsv.size()-1];//represents hsv of pixel to compareCurrentPoint to, not the hsv of currentPoint itself
+        possiblePoints.pop_back();
+        correspondingHsv.pop_back();
+        if (outputImage(currentPoint.x, currentPoint.y, 0) == 0){//if this pixel hasn't already been tested
+            if (currentHsv.compare(getRgb(image, currentPoint.x, currentPoint.y).getHsv(), 20, 0.4f, 0.6f)    ){//if color is close enough
+                outputImage(currentPoint.x, currentPoint.y, 0) = 255;
+                if (currentPoint.x != 0){
+                    possiblePoints.push_back(point(currentPoint.x-1, currentPoint.y));
+                    correspondingHsv.push_back(getRgb(image, x, y).getHsv());
+                }
+                if (currentPoint.x != image.width() - 1){
+                    possiblePoints.push_back(point(currentPoint.x+1, currentPoint.y));
+                    correspondingHsv.push_back(getRgb(image, x, y).getHsv());
+                }
+                if (currentPoint.y != 0){
+                    possiblePoints.push_back(point(currentPoint.x, currentPoint.y-1));
+                    correspondingHsv.push_back(getRgb(image, x, y).getHsv());
+                }
+                if (currentPoint.y != image.height()- 1){
+                    possiblePoints.push_back(point(currentPoint.x, currentPoint.y+1));
+                    correspondingHsv.push_back(getRgb(image, x, y).getHsv());
+                }
+            }
+            else{//pixel wasn't right color
+                //outputImage(currentPoint.x, currentPoint.y, 0) = 1;//mark as been tested but not included
+            }
+        }
+    }
+}
+
+CImg<uint8_t> BallFinder::floodThresh(CImg<uint8_t>& image){
+    CImg<uint8_t> finalImage(image.width(), image.height(),1,1,0);
+
+    for (int x = 0; x < image.width(); x++){
+        for (int y = 0; y < image.height(); y++){
+            if (getRgb(image, x, y).getHsv().compareToColor(160, 40, 0.2)){
+                floodFillObject(x, y, image, finalImage);
+            }
+        }
+    }
+
+    return finalImage;
 }

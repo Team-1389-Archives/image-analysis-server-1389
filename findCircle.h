@@ -53,7 +53,7 @@ struct hsv{
     float h;
     float s;
     float v;
-    bool compare(hsv other, float maxDistance);//Consider making other a reference
+    bool compare(hsv other, float maxHDist, float maxSDist, float maxVDist);//Consider making other a reference
     bool compareToColor(float h, float maxHVariance, float minS);
 };
 
@@ -106,6 +106,10 @@ public:
     void dispOutlines(CImg<UINT8>& image, vector<outline> outlines);
 
     vector<circle> whereBall(CImg<UINT8>& image);
+
+    void floodFillObject(int x, int y, CImg<uint8_t>& image, CImg<uint8_t>& outputImage);
+
+    CImg<uint8_t> floodThresh(CImg<uint8_t>& image);
 
 private:
     float ballHValue;

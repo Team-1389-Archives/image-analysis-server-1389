@@ -21,6 +21,7 @@ int main(){
         cerr<<"Unable to open camera stream"<<endl;
         abort();
     }*/
+
     Camera cam("/dev/video0", 640, 480);
     CImg<UINT8> image;
     
