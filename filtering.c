@@ -84,10 +84,10 @@ static inline bool threshold(struct pixel pix){
 }
 
 static inline void operate(struct pixel *pix){
-	if(!threshold(*pix)){
+	if(threshold(*pix)){
+	    pix->r=255;
+	}else{
 		pix->r=0;
-		pix->g=0;
-		pix->b=0;
 	}
 }
 

@@ -9,6 +9,7 @@ typedef uint8_t UINT8;
 #include <stdlib.h>
 #include <math.h>
 #include <array>
+#include "filtering.h"
 
 #ifndef cimg_display
 #define cimg_display 0
@@ -94,6 +95,7 @@ struct line{//ax+by+c=0
 class BallFinder{
 public:
     BallFinder();
+    virtual ~BallFinder();
 
     CImg<UINT8> threshhold(CImg<UINT8>& image); //uint8_t 
 
@@ -110,10 +112,12 @@ public:
     void floodFillObject(int x, int y, CImg<uint8_t>& image, CImg<uint8_t>& outputImage);
 
     CImg<uint8_t> floodThresh(CImg<uint8_t>& image);
+    void filteringSystem(uint8_t* data, int w, int h);
 
 private:
     float ballHValue;
     int imageWidth;//used because some operations need to work proportional to image size
+    filtering_system_t m_filtering_system;
 };
 
 line findPerpendicularLine(point p1, point p2);

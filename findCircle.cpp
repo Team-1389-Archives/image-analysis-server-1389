@@ -27,6 +27,10 @@ inline float square(float num){return num * num;}
 
 BallFinder::BallFinder(){
     ballHValue = 220;
+    m_filtering_system=FilteringSystemNew();
+}
+BallFinder::~BallFinder(){
+    FilteringSystemClose(m_filtering_system);
 }
 
 float precisePoint::distanceTo(point p){
@@ -113,7 +117,7 @@ bool hsv::compareToColor(float colorH, float maxHVariance, float minS){
 
 vector<circle> BallFinder::whereBall(CImg<UINT8>& image){
     imageWidth = image.width();
-    image = threshhold(image);
+    //image = threshhold(image);
     //image.blur(imageWidth/100);
     image = booleanEdgeDetect(image);
     vector<outline> outlines = findOutlines(image);
@@ -134,6 +138,10 @@ bool rgb::isBlue(){
     if (g > 1.5f*b)
         return false;
     return true;
+}
+
+void BallFinder::filteringSystem(uint8_t* data, int w, int h){
+    FilteringSystemFilter(m_filtering_system, w, h, data);
 }
 
 CImg<UINT8> BallFinder::threshhold(CImg<UINT8>& image){

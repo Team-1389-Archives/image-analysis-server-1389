@@ -22,15 +22,10 @@ int main(){
         abort();
     }*/
 
-    Camera cam("/dev/video0", 640, 480);
+    Camera cam("/dev/video3", 640, 480);
     CImg<UINT8> image;
-    
-    cam.load(image);
-    image.resize_halfXY();
 
     CImgDisplay disp;
-
-    image.display(disp);
 
     CImg<UINT8> modifiedImage;
     
@@ -38,12 +33,25 @@ int main(){
 
     vector<circle> cs;
     circle biggest;
+    int width, height;
+    uint8_t *data;
 
-    while(!disp.is_closed()){
-        cam.load(image);
-        image.resize_halfXY();
+    do{
+        cam.load(&data, &width, &height);
         
-        modifiedImage = image;
+        finder.filteringSystem(data, width, height);
+        image.assign(width, height, 1, 3);
+        UINT8
+            *ptr_r = image.data(0,0,0,0),
+            *ptr_g = image.data(0,0,0,1),
+            *ptr_b = image.data(0,0,0,2);
+          UINT8 *ptrs=static_cast<uint8_t*>(data);
+          while(ptrs<(static_cast<uint8_t*>(data)+(width*height*3))){
+              *(ptr_r++) = (UINT8)*(ptrs++);
+              *(ptr_g++) = (UINT8)*(ptrs++);
+              *(ptr_b++) = (UINT8)*(ptrs++);
+          }
+        modifiedImage=image;
         cs = finder.whereBall(modifiedImage);
         biggest.r = -1;
         for (unsigned int i = 0; i < cs.size(); i++){//find biggest circle
@@ -60,7 +68,7 @@ int main(){
         //image.blur(image.width()/100);
         //image = finder.booleanEdgeDetect(image);
         image.display(disp);
-    }
+    }while(!disp.is_closed());
 
     return 0;
 }

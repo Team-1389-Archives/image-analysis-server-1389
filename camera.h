@@ -127,7 +127,7 @@ public:
             v4l2_munmap(buffers[i].start, buffers[i].length);
         v4l2_close(fd);
     }
-    void load(CImg<uint8_t> &img) {
+    void load(uint8_t **out, int *width, int *height) {
         int r;
         fd_set                          fds;
         struct timeval                  tv;
@@ -162,7 +162,10 @@ public:
                 fmt.fmt.pix.width, fmt.fmt.pix.height);
         fwrite(buffers[buf.index].start, buf.bytesused, 1, fout);
         fclose(fout);*/
-        img.assign(/*static_cast<uint8_t*>(buffers[buf.index].start), */fmt.fmt.pix.width, fmt.fmt.pix.height, 1, 3/*, true*/);
+        *width=fmt.fmt.pix.width;
+        *height=fmt.fmt.pix.height;
+        *out=static_cast<uint8_t*>(buffers[buf.index].start);
+        /*img.assign(fmt.fmt.pix.width, fmt.fmt.pix.height, 1, 3);
         UINT8
             *ptr_r = img.data(0,0,0,0),
             *ptr_g = img.data(0,0,0,1),
@@ -172,7 +175,7 @@ public:
               *(ptr_r++) = (UINT8)*(ptrs++);
               *(ptr_g++) = (UINT8)*(ptrs++);
               *(ptr_b++) = (UINT8)*(ptrs++);
-          }
+          }*/
 
         xioctl(fd, VIDIOC_QBUF, &buf);
     }
