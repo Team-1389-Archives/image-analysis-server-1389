@@ -1,6 +1,3 @@
-#define	JEMALLOC_MANGLE	1
-#include <jemalloc/jemalloc.h>
-
 #include <pthread.h>
 #include <ck_md.h>
 #include <ck_spinlock.h>
@@ -11,7 +8,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <sched.h>
+#include <semaphore.h>
 #include "filtering.h"
 
 #define NUM_CORES		(4)
@@ -20,6 +17,7 @@ struct request{
 	uint32_t num_finished;
 	int num_pixels;
 	uint8_t *data;
+	sem_t notify;
 };
 
 #define QUEUE_LENGTH		(4)//Power of 2 >=4
@@ -30,6 +28,7 @@ struct Thread{
 	ck_spinlock_t    producer_lock;
 	ck_ring_t        queue;
 	ck_ring_buffer_t queue_buffer[QUEUE_LENGTH];
+	sem_t            work_ready;
 } __attribute__ ((aligned (CK_MD_CACHELINE)));
 
 struct FilteringSystem{
@@ -95,6 +94,7 @@ static void* working_thread(void* arg){
 	struct Thread *thread=arg;
 	while(true){
 		struct request *req;
+		sem_wait(&thread->work_ready);
 		while(!ck_ring_dequeue_spsc(&thread->queue, thread->queue_buffer, &req)){
 			sched_yield();
 		}
@@ -109,7 +109,7 @@ static void* working_thread(void* arg){
 				break;
 			}
 		}
-		ck_pr_inc_32(&req->num_finished);
+		sem_post(&req->notify);
 	}
 	pthread_exit(NULL);
 	return NULL;
@@ -122,6 +122,7 @@ filtering_system_t FilteringSystemNew(){
 		thread->idx=i;
 		ck_ring_init(&thread->queue, QUEUE_LENGTH);
 		ck_spinlock_init(&thread->producer_lock);
+		sem_init(&thread->work_ready, 0, 0);
 		pthread_create(&thread->thread, NULL, working_thread, thread);
 	}
 	return sys;
@@ -129,23 +130,26 @@ filtering_system_t FilteringSystemNew(){
 void FilteringSystemFilter(filtering_system_t sys, int width, int height, uint8_t* img){
 	struct request req={
 		.num_pixels=width*height,
-		.data=img,
-		.num_finished=0
+		.data=img
 	};
+	sem_init(&req.notify, 0, 0);
 	for(int i=0;i<NUM_CORES;i++){
 		struct Thread *thread=&sys->threads[i];
 		ck_spinlock_lock(&thread->producer_lock);
 		ck_ring_enqueue_spsc(&thread->queue, thread->queue_buffer, &req);
 		ck_spinlock_unlock(&thread->producer_lock);
+		sem_post(&thread->work_ready);
 	}
-	while(ck_pr_load_32(&req.num_finished)<NUM_CORES){
-		ck_pr_stall();
+	for(int i=0;i<NUM_CORES;i++){
+	    sem_wait(&req.notify);
 	}
+	sem_destroy(&req.notify);
 }
 void FilteringSystemClose(filtering_system_t sys){
 	for(int i=0;i<NUM_CORES;i++){
 		struct Thread *thread=&sys->threads[i];
 		pthread_cancel(thread->thread);
+		sem_destroy(&thread->work_ready);
 	}
 	free(sys);
 }
