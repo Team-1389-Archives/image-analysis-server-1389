@@ -52,7 +52,7 @@ int main(){
               *(ptr_b++) = (UINT8)*(ptrs++);
           }
         modifiedImage=image;
-        cs = finder.whereBall(modifiedImage);
+        /*cs = finder.whereBall(modifiedImage);
         biggest.r = -1;
         for (unsigned int i = 0; i < cs.size(); i++){//find biggest circle
             if (cs[i].r > biggest.r)
@@ -63,7 +63,7 @@ int main(){
         if (biggest.r != -1){
             cout << biggest.x << " " << biggest.y << " " << biggest.r << '\n';
             cout.flush();
-        }
+        }*/
         //image = finder.threshhold(image);
         //image.blur(image.width()/100);
         //image = finder.booleanEdgeDetect(image);

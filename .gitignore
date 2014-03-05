@@ -7,3 +7,4 @@ streamingMain
 *.jpg
 filtering.o
 gmon.out
+out.txt
