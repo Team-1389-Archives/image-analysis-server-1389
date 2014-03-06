@@ -119,7 +119,7 @@ vector<circle> BallFinder::whereBall(CImg<UINT8>& image){
     imageWidth = image.width();
     //image = threshhold(image);
     //image.blur(imageWidth/100);
-    image = booleanEdgeDetect(image);
+    //image = booleanEdgeDetect(image);
     vector<outline> outlines = findOutlines(image);
     vector<circle> circles;
     circle c;
@@ -140,8 +140,8 @@ bool rgb::isBlue(){
     return true;
 }
 
-void BallFinder::filteringSystem(uint8_t* data, int w, int h){
-    FilteringSystemFilter(m_filtering_system, w, h, data);
+void BallFinder::filteringSystem(uint8_t* data, int w, int h, uint8_t *out){
+    FilteringSystemFilter(m_filtering_system, w, h, data, out);
 }
 
 CImg<UINT8> BallFinder::threshhold(CImg<UINT8>& image){

@@ -112,7 +112,7 @@ public:
     void floodFillObject(int x, int y, CImg<uint8_t>& image, CImg<uint8_t>& outputImage);
 
     CImg<uint8_t> floodThresh(CImg<uint8_t>& image);
-    void filteringSystem(uint8_t* data, int w, int h);
+    void filteringSystem(uint8_t* data, int w, int h, uint8_t *out);
 
 private:
     float ballHValue;

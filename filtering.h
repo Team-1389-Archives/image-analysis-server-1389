@@ -9,8 +9,8 @@ extern "C"{
 
 typedef struct FilteringSystem* filtering_system_t;
 
-filtering_system_t FilteringSystemNew();
-void FilteringSystemFilter(filtering_system_t, int width, int height, uint8_t*);
+filtering_system_t FilteringSystemNew(void);
+void FilteringSystemFilter(filtering_system_t, int width, int height, uint8_t* in, uint8_t *out);
 void FilteringSystemClose(filtering_system_t); 
 
 #ifdef __cplusplus
