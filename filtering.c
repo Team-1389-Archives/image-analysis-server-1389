@@ -9,14 +9,23 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <semaphore.h>
+#include <assert.h>
 #include "filtering.h"
 
 #define NUM_CORES		(4)
+
+enum{
+    OPERATION_THRESHOLD,
+    OPERATION_EDGE_DETECT
+};
 
 struct request{
 	uint32_t num_finished;
 	int num_pixels;
 	uint8_t *data;
+	uint8_t *out;
+	int width, height;
+	uint8_t operation;
 	sem_t notify;
 };
 
@@ -82,15 +91,51 @@ static inline bool threshold(struct pixel pix){
 	return (hue>=MIN_HUE && hue<=MAX_HUE);
 }
 
-static inline void operate(struct pixel *pix){
+static inline void threshold_operation(struct pixel *pix, int i, struct request *req){
 	if(threshold(*pix)){
-	    pix->r=0;
 	    pix->g=255;
-	    pix->b=0;
 	}else{
-		//pix->r=0;
+		pix->g=0;
 	}
 }
+
+static inline int edge_detect_predicate(struct pixel *pix, int i, struct request *req){
+    if(pix->g!=255){
+        return 0;
+    }
+    int x=i%req->width;
+    int y=i/req->width;
+    /*if(x!=0 && (pix-1)->g==255){
+        return 1;
+    }
+    if(x!=(req->width-1) && (pix+1)->g==255){
+        return 1;
+    }
+    if(y!=0 && (pix-req->width)->g==255){
+        return 1;
+    }
+    if(y!=(req->height-1) && (pix+req->width)->g==255){
+        return 1;
+    }
+    return 0;*/
+    return ((x/25)&1) && ((y/25)&1);
+}
+
+static inline void edge_detect_operation(struct pixel *pix, int i, struct request *req){
+    req->out[i]=edge_detect_predicate(pix, i, req)*255;//This abuses the zero product property
+}
+
+#define PER_PIXEL_OPERATION(func)   for(int idx=thread->idx;true;idx+=NUM_CORES){   \
+			int end=(idx+1)*BATCH_SIZE; \
+			int i;  \
+			for(i=idx*BATCH_SIZE;i<end && i<req->num_pixels; i++){  \
+				struct pixel *pix=(struct pixel*)&req->data[i*3];   \
+				func(pix, i, req);   \
+			}   \
+			if(i>=req->num_pixels){ \
+				break;  \
+			}   \
+		}
 
 static void* working_thread(void* arg){
 	struct Thread *thread=arg;
@@ -100,16 +145,10 @@ static void* working_thread(void* arg){
 		while(!ck_ring_dequeue_spsc(&thread->queue, thread->queue_buffer, &req)){
 			sched_yield();
 		}
-		for(int idx=thread->idx;true;idx+=NUM_CORES){
-			int end=(idx+1)*BATCH_SIZE;
-			int i;
-			for(i=idx*BATCH_SIZE;i<end && i<req->num_pixels; i++){
-				struct pixel *pix=(struct pixel*)&req->data[i*3];
-				operate(pix);
-			}
-			if(i>=req->num_pixels){
-				break;
-			}
+		if(req->operation==OPERATION_THRESHOLD){
+		    PER_PIXEL_OPERATION(threshold_operation);
+		}else if(req->operation==OPERATION_EDGE_DETECT){
+		    PER_PIXEL_OPERATION(edge_detect_operation);
 		}
 		sem_post(&req->notify);
 	}
@@ -118,6 +157,8 @@ static void* working_thread(void* arg){
 }
 
 filtering_system_t FilteringSystemNew(){
+    assert(sizeof(struct pixel)==3*sizeof(uint8_t));
+    
 	filtering_system_t sys=malloc(sizeof(struct FilteringSystem));
 	for(int i=0;i<NUM_CORES;i++){
 		struct Thread *thread=&sys->threads[i];
@@ -129,22 +170,31 @@ filtering_system_t FilteringSystemNew(){
 	}
 	return sys;
 }
-void FilteringSystemFilter(filtering_system_t sys, int width, int height, uint8_t* img){
+#define EXECUTE_REQUEST()   do{ \
+    for(int i=0;i<NUM_CORES;i++){   \
+		struct Thread *thread=&sys->threads[i]; \
+		ck_spinlock_lock(&thread->producer_lock);   \
+		ck_ring_enqueue_spsc(&thread->queue, thread->queue_buffer, &req);   \
+		ck_spinlock_unlock(&thread->producer_lock); \
+		sem_post(&thread->work_ready);  \
+	}   \
+	for(int i=0;i<NUM_CORES;i++){   \
+	    sem_wait(&req.notify);  \
+	}   \
+}while(0)
+void FilteringSystemFilter(filtering_system_t sys, int width, int height, uint8_t* img, uint8_t *out){
 	struct request req={
 		.num_pixels=width*height,
-		.data=img
+		.data=img,
+		.out=out,
+		.operation=OPERATION_THRESHOLD,
+		.width=width,
+		.height=height
 	};
 	sem_init(&req.notify, 0, 0);
-	for(int i=0;i<NUM_CORES;i++){
-		struct Thread *thread=&sys->threads[i];
-		ck_spinlock_lock(&thread->producer_lock);
-		ck_ring_enqueue_spsc(&thread->queue, thread->queue_buffer, &req);
-		ck_spinlock_unlock(&thread->producer_lock);
-		sem_post(&thread->work_ready);
-	}
-	for(int i=0;i<NUM_CORES;i++){
-	    sem_wait(&req.notify);
-	}
+	EXECUTE_REQUEST();
+	req.operation=OPERATION_EDGE_DETECT;
+	EXECUTE_REQUEST();
 	sem_destroy(&req.notify);
 }
 void FilteringSystemClose(filtering_system_t sys){

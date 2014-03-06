@@ -35,22 +35,22 @@ int main(){
     circle biggest;
     int width, height;
     uint8_t *data;
-
     do{
         cam.load(&data, &width, &height);
+        uint8_t *out_data=new uint8_t[width*height];
         
-        finder.filteringSystem(data, width, height);
+        finder.filteringSystem(data, width, height, out_data);
         image.assign(width, height, 1, 3);
         UINT8
             *ptr_r = image.data(0,0,0,0),
             *ptr_g = image.data(0,0,0,1),
             *ptr_b = image.data(0,0,0,2);
-          UINT8 *ptrs=static_cast<uint8_t*>(data);
-          while(ptrs<(static_cast<uint8_t*>(data)+(width*height*3))){
-              *(ptr_r++) = (UINT8)*(ptrs++);
-              *(ptr_g++) = (UINT8)*(ptrs++);
-              *(ptr_b++) = (UINT8)*(ptrs++);
+          for(int i=0;i<(width*height);i++){
+            *(ptr_r++) = data[(i*3)+1];
+            *(ptr_g++) = out_data[i];
+            *(ptr_b++) = 0;
           }
+        //memcpy(image.data(0,0,0,0), out_data, width*height);
         modifiedImage=image;
         /*cs = finder.whereBall(modifiedImage);
         biggest.r = -1;
@@ -68,6 +68,7 @@ int main(){
         //image.blur(image.width()/100);
         //image = finder.booleanEdgeDetect(image);
         image.display(disp);
+        delete[] out_data;
     }while(!disp.is_closed());
 
     return 0;
