@@ -105,20 +105,19 @@ static inline int edge_detect_predicate(struct pixel *pix, int i, struct request
     }
     int x=i%req->width;
     int y=i/req->width;
-    /*if(x!=0 && (pix-1)->g==255){
+    if(x!=0 && (pix-1)->g!=255){
         return 1;
     }
-    if(x!=(req->width-1) && (pix+1)->g==255){
+    if(x!=(req->width-1) && (pix+1)->g!=255){
         return 1;
     }
-    if(y!=0 && (pix-req->width)->g==255){
+    if(y!=0 && (pix-req->width)->g!=255){
         return 1;
     }
-    if(y!=(req->height-1) && (pix+req->width)->g==255){
+    if(y!=(req->height-1) && (pix+req->width)->g!=255){
         return 1;
     }
-    return 0;*/
-    return ((x/25)&1) && ((y/25)&1);
+    return 0;
 }
 
 static inline void edge_detect_operation(struct pixel *pix, int i, struct request *req){
@@ -205,3 +204,5 @@ void FilteringSystemClose(filtering_system_t sys){
 	}
 	free(sys);
 }
+
+//NOTE the g is displaying as red, and the r is displaying as green
