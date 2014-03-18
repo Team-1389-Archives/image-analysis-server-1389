@@ -102,11 +102,13 @@ static inline void threshold_operation(struct pixel *pix, int i, struct request 
 static inline bool edge_detect_predicate(struct pixel *pix, int i, struct request *req){
     int x=i%req->width;
     int y=i/req->width;
-#define image(x,y,chan)     (req->data[(((x)+(y)*(req->width))*3)+1])
-    bool isEdge=false;
-    if (image(x,y,0) > 127){///********** > 127 because after blur this is area we want;
+#define image(x,y)     (req->data[(((x)+(y)*(req->width))*3)+1])
+    if(image(x,y)<127){
+        return false;
+    }
+    /*bool isEdge=false;
                 if (x != 0){
-                    if (image(x-1,y,0) <= 127)//means its black pixel Why do black pixels automatically mean an edge?
+                    if (image(x-1,y,0) <= 127)
                         isEdge = true;
                 }
                 if (x != req->width - 1){
@@ -120,9 +122,11 @@ static inline bool edge_detect_predicate(struct pixel *pix, int i, struct reques
                 if (y != req->height - 1){
                     if (image(x,y+1,0) <= 127)
                         isEdge = true;
-                }
-            }
-            return isEdge;
+                }*/
+    return  (x!=0 && (image(x-1,y) <= 127))           ||
+            (x!=req->width-1 && image(x+1,y) <= 127)  ||
+            (y!=0 && (image(x,y-1) <= 127))           ||
+            (y!=req->height-1 && (image(x,y+1) <= 127));
 #undef image
 }
 
