@@ -40,15 +40,15 @@ int main(){
         uint8_t *out_data=new uint8_t[width*height];
         
         finder.filteringSystem(data, width, height, out_data);
-        image.assign(width, height, 1, 3);
+        image.assign(width, height, 1, 1);
         UINT8
-            *ptr_r = image.data(0,0,0,0),
-            *ptr_g = image.data(0,0,0,1),
-            *ptr_b = image.data(0,0,0,2);
+            *ptr_r = image.data(0,0,0,0);//,
+            //*ptr_g = image.data(0,0,0,1),
+            //*ptr_b = image.data(0,0,0,2);
           for(int i=0;i<(width*height);i++){
-            *(ptr_r++) = data[(i*3)+1];
-            *(ptr_g++) = out_data[i];
-            *(ptr_b++) = 0;
+            *(ptr_r++) = out_data[i];
+            //*(ptr_g++) = 0;
+            //*(ptr_b++) = 0;
           }
         //memcpy(image.data(0,0,0,0), out_data, width*height);
         modifiedImage=image;

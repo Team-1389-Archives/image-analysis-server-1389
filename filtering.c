@@ -99,17 +99,35 @@ static inline void threshold_operation(struct pixel *pix, int i, struct request 
 	}
 }
 
-static inline int edge_detect_predicate(struct pixel *pix, int i, struct request *req){
-    if(pix->g!=255){
-        return 0;
-    }
+static inline bool edge_detect_predicate(struct pixel *pix, int i, struct request *req){
     int x=i%req->width;
     int y=i/req->width;
-    return 1;
+#define image(x,y,chan)     (req->data[(((x)+(y)*(req->width))*3)+1])
+    bool isEdge=false;
+    if (image(x,y,0) > 127){///********** > 127 because after blur this is area we want;
+                if (x != 0){
+                    if (image(x-1,y,0) <= 127)//means its black pixel Why do black pixels automatically mean an edge?
+                        isEdge = true;
+                }
+                if (x != req->width - 1){
+                    if (image(x+1,y,0) <= 127)
+                        isEdge = true;
+                }
+                if (y != 0){
+                    if (image(x,y-1,0) <= 127)
+                        isEdge = true;
+                }
+                if (y != req->height - 1){
+                    if (image(x,y+1,0) <= 127)
+                        isEdge = true;
+                }
+            }
+            return isEdge;
+#undef image
 }
 
 static inline void edge_detect_operation(struct pixel *pix, int i, struct request *req){
-    req->out[i]=edge_detect_predicate(pix, i, req)*255;//This abuses the zero product property
+    req->out[i]=edge_detect_predicate(pix, i, req)?255:0;
 }
 
 #define PER_PIXEL_OPERATION(func)   for(int idx=thread->idx;true;idx+=NUM_CORES){   \
