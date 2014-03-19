@@ -11,11 +11,56 @@ inline int abs(int num){return (num < 0)?-num:num;}//math.h only has fabs() for 
 
 inline float square(float num){return num * num;}
 
-BallFinder::BallFinder(){
+BallFinder::BallFinder():
+    settingsReader()
+{
+    int16_t hMinInt, hMaxInt, sMinInt;
+    float hMin, hMax, sMin;
+    if (!settingsReader.loadFromFile("config.txt")){
+        cout << "failed to load config.txt\nusing default values (hue min =, hue max =, saturation min =)" << endl;
+        hMin = 200;
+        hMax = 250;
+        sMin = 0.2;
+    }
+    else{
+        cout << "successfully loaded config.txt" << endl;
+        string value;
+        value = settingsReader.getString("hue_min");
+        if (value == ""){
+            cout << "failed to load \"hue_min\" from config.txt, using default value of 200" << endl;
+            hMin = 200;
+        } 
+        else{
+            cout << "successfully loaded \"hue_min\" as " << value << " from config.txt" << endl;
+            hMin = atof(value.c_str());
+        }
+        value = settingsReader.getString("hue_max");
+        if (value == ""){
+            cout << "failed to load \"hue_max\" from config.txt, using default value of 200" << endl;
+            hMax = 250;
+        } 
+        else{
+            cout << "successfully loaded \"hue_max\" as " << value << " from config.txt" << endl;
+            hMax = atof(value.c_str());
+        }
+        value = settingsReader.getString("saturation_min");
+        if (value == ""){
+            cout << "failed to load \"saturation_min\" from config.txt, using default value of 200" << endl;
+            sMin = .1;
+        } 
+        else{
+            cout << "successfully loaded \"saturation_min\" as " << value << " from config.txt" << endl;
+            sMin = atof(value.c_str());
+        }
+    }
+    hMinInt = (int16_t)(hMin/360*16384);
+    hMaxInt = (int16_t)(hMax/360*16384);
+    sMinInt = (int16_t)(sMin*16384);
+    cout << "Final threshholding values are: " << hMinInt << "," << hMaxInt << "," << sMinInt << endl;
     m_filtering_system=FilteringSystemNew(//16384
-        500,
-	    10000,
-	    150
+        hMinInt,
+	    hMaxInt,
+	    sMinInt
     );
 }
 BallFinder::~BallFinder(){

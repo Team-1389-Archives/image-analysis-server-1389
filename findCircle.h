@@ -10,6 +10,10 @@ typedef uint8_t UINT8;
 #include <math.h>
 #include <array>
 #include "filtering.h"
+#include "configReader.h"
+#include <stdint.h>
+#include <iostream>
+#include <string>
 
 #ifndef cimg_display
 #define cimg_display 0
@@ -110,6 +114,7 @@ public:
 private:
     int imageWidth;//used because some operations need to work proportional to image size
     filtering_system_t m_filtering_system;
+    ConfigReader settingsReader;
 };
 
 line findPerpendicularLine(point p1, point p2);
