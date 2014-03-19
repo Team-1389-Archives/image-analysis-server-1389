@@ -9,11 +9,7 @@ extern "C"{
 
 typedef struct FilteringSystem* filtering_system_t;
 
-filtering_system_t FilteringSystemNew(
-    int16_t min_hue,
-	int16_t max_hue,
-	uint16_t min_saturation
-);
+filtering_system_t FilteringSystemNew(void);
 void FilteringSystemFilter(filtering_system_t, int width, int height, uint8_t* in, uint8_t *out);
 void FilteringSystemClose(filtering_system_t); 
 

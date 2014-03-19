@@ -38,10 +38,6 @@ struct Thread{
 	ck_ring_t        queue;
 	ck_ring_buffer_t queue_buffer[QUEUE_LENGTH];
 	sem_t            work_ready;
-	
-	int16_t min_hue;
-	int16_t max_hue;
-	uint16_t min_saturation;
 } __attribute__ ((aligned (CK_MD_CACHELINE)));
 
 struct FilteringSystem{
@@ -55,7 +51,14 @@ struct __attribute__ ((__packed__)) pixel{
 #define BATCH_SIZE		(CK_MD_CACHELINE*3)
 #define INT16(x)		((int16_t)(x))
 
-static inline bool threshold(struct pixel pix, struct Thread *thread){
+#define SATURATION_MIN		(250)
+#define TARGET_HUE			(1000)
+#define MAX_HUE_VARIANCE	(1000)
+
+#define MIN_HUE				(TARGET_HUE-MAX_HUE_VARIANCE)
+#define MAX_HUE				(TARGET_HUE+MAX_HUE_VARIANCE)
+
+static inline bool threshold(struct pixel pix){
 	uint8_t max, min;
 	max=((pix.r > pix.g) && (pix.r > pix.b))?pix.r:(
 		((pix.g > pix.r) && (pix.g > pix.b)) ? 
@@ -70,7 +73,7 @@ static inline bool threshold(struct pixel pix, struct Thread *thread){
 	}
 	uint8_t delta=max-min;
 	uint16_t saturation=(delta*1000)/max;
-	if(saturation<thread->min_saturation){
+	if(saturation<SATURATION_MIN){
 		return false;
 	}
 	int16_t hue;
@@ -85,11 +88,11 @@ static inline bool threshold(struct pixel pix, struct Thread *thread){
 	if(hue<0){
 		hue+=INT16_MAX;
 	}
-	return (hue>=thread->min_hue && hue<=thread->max_hue);
+	return (hue>=MIN_HUE && hue<=MAX_HUE);
 }
 
-static inline void threshold_operation(struct pixel *pix, int i, struct request *req, struct Thread *thread){
-	if(threshold(*pix, thread)){
+static inline void threshold_operation(struct pixel *pix, int i, struct request *req){
+	if(threshold(*pix)){
 	    pix->g=255;
 	}else{
 		pix->g=0;
@@ -110,7 +113,7 @@ static inline bool edge_detect_predicate(struct pixel *pix, int i, struct reques
 #undef image
 }
 
-static inline void edge_detect_operation(struct pixel *pix, int i, struct request *req, struct Thread *thread){
+static inline void edge_detect_operation(struct pixel *pix, int i, struct request *req){
     req->out[i]=edge_detect_predicate(pix, i, req)?255:0;
 }
 
@@ -119,7 +122,7 @@ static inline void edge_detect_operation(struct pixel *pix, int i, struct reques
 			int i;  \
 			for(i=idx*BATCH_SIZE;i<end && i<req->num_pixels; i++){  \
 				struct pixel *pix=(struct pixel*)&req->data[i*3];   \
-				func(pix, i, req, thread);   \
+				func(pix, i, req);   \
 			}   \
 			if(i>=req->num_pixels){ \
 				break;  \
@@ -145,19 +148,12 @@ static void* working_thread(void* arg){
 	return NULL;
 }
 
-filtering_system_t FilteringSystemNew(int16_t min_hue,
-	int16_t max_hue,
-	uint16_t min_saturation
-){
+filtering_system_t FilteringSystemNew(){
     assert(sizeof(struct pixel)==3*sizeof(uint8_t));
     
 	filtering_system_t sys=malloc(sizeof(struct FilteringSystem));
 	for(int i=0;i<NUM_CORES;i++){
 		struct Thread *thread=&sys->threads[i];
-		thread->min_hue=min_hue;
-		thread->max_hue=max_hue;
-		thread->min_saturation=min_saturation;
-		
 		thread->idx=i;
 		ck_ring_init(&thread->queue, QUEUE_LENGTH);
 		ck_spinlock_init(&thread->producer_lock);
@@ -201,3 +197,5 @@ void FilteringSystemClose(filtering_system_t sys){
 	}
 	free(sys);
 }
+
+//NOTE the g is displaying as red, and the r is displaying as green

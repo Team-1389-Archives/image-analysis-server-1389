@@ -3,7 +3,6 @@
 #include <iostream>
 #include <cstdlib>
 #include "findCircle.h"
-#include <stdint.h>
 //#define cimg_use_jpeg 1
 //#include "loadCameraModded.h"
 
@@ -24,7 +23,7 @@ int main(){
     }*/
 
     Camera cam("/dev/video3", 640, 480);
-    CImg<uint8_t> image;
+    CImg<UINT8> image;
 
     CImgDisplay disp;
 
@@ -36,17 +35,24 @@ int main(){
     circle biggest;
     int width, height;
     uint8_t *data;
-    uint8_t *out_data=NULL;
     do{
-        cam.load(&data, &width, &height);//Assume that the image size will remain constant
-        if(out_data==NULL){
-            out_data=new uint8_t[width*height];
-        }
+        cam.load(&data, &width, &height);
+        uint8_t *out_data=new uint8_t[width*height];
         
         finder.filteringSystem(data, width, height, out_data);
-        image.assign(out_data, width, height, 1, 1, true);
+        image.assign(width, height, 1, 1);
+        UINT8
+            *ptr_r = image.data(0,0,0,0);//,
+            //*ptr_g = image.data(0,0,0,1),
+            //*ptr_b = image.data(0,0,0,2);
+          for(int i=0;i<(width*height);i++){
+            *(ptr_r++) = out_data[i];
+            //*(ptr_g++) = 0;
+            //*(ptr_b++) = 0;
+          }
+        //memcpy(image.data(0,0,0,0), out_data, width*height);
         modifiedImage=image;
-        cs = finder.whereBall(modifiedImage);
+        /*cs = finder.whereBall(modifiedImage);
         biggest.r = -1;
         for (unsigned int i = 0; i < cs.size(); i++){//find biggest circle
             if (cs[i].r > biggest.r)
@@ -57,11 +63,12 @@ int main(){
         if (biggest.r != -1){
             cout << biggest.x << " " << biggest.y << " " << biggest.r << '\n';
             cout.flush();
-        }
+        }*/
         //image = finder.threshhold(image);
         //image.blur(image.width()/100);
         //image = finder.booleanEdgeDetect(image);
         image.display(disp);
+        delete[] out_data;
     }while(!disp.is_closed());
 
     return 0;
