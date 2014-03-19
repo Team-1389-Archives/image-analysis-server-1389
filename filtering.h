@@ -7,6 +7,10 @@
 extern "C"{
 #endif
 
+extern uint16_t g_min_s;
+extern uint16_t g_hue;
+extern uint16_t g_hue_variance;
+
 typedef struct FilteringSystem* filtering_system_t;
 
 filtering_system_t FilteringSystemNew(void);

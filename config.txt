@@ -1,0 +1,3 @@
+hue = 345;
+h_variance = 20;
+saturation_min = 0.6;

@@ -51,9 +51,9 @@ struct __attribute__ ((__packed__)) pixel{
 #define BATCH_SIZE		(CK_MD_CACHELINE*3)
 #define INT16(x)		((int16_t)(x))
 
-#define SATURATION_MIN		(250)
-#define TARGET_HUE			(1000)
-#define MAX_HUE_VARIANCE	(1000)
+#define SATURATION_MIN		(g_min_s) //0 to 255
+#define TARGET_HUE			(g_hue) //0 to 3600
+#define MAX_HUE_VARIANCE	(g_hue_variance)
 
 #define MIN_HUE				(TARGET_HUE-MAX_HUE_VARIANCE)
 #define MAX_HUE				(TARGET_HUE+MAX_HUE_VARIANCE)
@@ -86,7 +86,7 @@ static inline bool threshold(struct pixel pix){
 		hue=(600)*4+PARTIAL(pix.r, pix.g);
 	}
 	if(hue<0){
-		hue+=INT16_MAX;
+		hue+=3600;
 	}
 	return (hue>=MIN_HUE && hue<=MAX_HUE);
 }
