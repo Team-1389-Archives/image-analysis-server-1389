@@ -1,3 +1,0 @@
-hue_min = 0;
-hue_max = 360;
-saturation_min = 0;

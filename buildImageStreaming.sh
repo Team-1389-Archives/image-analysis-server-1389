@@ -17,4 +17,4 @@ gcc -g -c filtering.c -O3 `pkg-config --cflags ck` -D_GNU_SOURCE -D_XOPEN_SOURCE
 if test $? != 0 ; then
     exit 1
 fi
-exec $CXX --std=c++0x -g $PROFILING_FLAGS -o streamingMain streamingMain.cpp findCircle.cpp configReader.cpp filtering.o -ljpeg -pthread $EXTRA_FLAGS -lX11 -lv4l2 `pkg-config --libs ck`
+exec $CXX --std=c++0x -g $PROFILING_FLAGS -o streamingMain streamingMain.cpp findCircle.cpp filtering.o -ljpeg -pthread $EXTRA_FLAGS -lX11 -lv4l2 `pkg-config --libs ck`
