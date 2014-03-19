@@ -302,7 +302,7 @@ outline BallFinder::floodfill(CImg<UINT8>& image, int startX, int startY){
             if (currentPoint.x != image.height()- 1 && currentPoint.y != image.height() - 1)
                 possiblePoints.push_back(point(currentPoint.x+1, currentPoint.y+1));
         }
-        setRgb(image, currentPoint.x, currentPoint.y, BLACK);
+        image(currentPoint.x, currentPoint.y, 0) = 0;
     }
     return ret;
 }
