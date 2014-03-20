@@ -29,46 +29,46 @@ BallFinder::BallFinder(){
     ballHValue = 220;//remove
     float h, hVariance, sMin;
     if (!settingsReader.loadFromFile("config.txt")){
-        cout << "failed to load config.txt\nusing default values (hue min =, hue max =, saturation min =)" << endl;
+        cerr << "failed to load config.txt\nusing default values (hue min =, hue max =, saturation min =)" << endl;
         h = 200;
         hVariance = 250;
         sMin = 0.2;
     }
     else{
-        cout << "successfully loaded config.txt" << endl;
+        cerr << "successfully loaded config.txt" << endl;
         string value;
         value = settingsReader.getString("hue");
         if (value == ""){
-            cout << "failed to load \"hue\" from config.txt, using default value of 200" << endl;
+            cerr << "failed to load \"hue\" from config.txt, using default value of 200" << endl;
             h = 200;
         } 
         else{
-            cout << "successfully loaded \"hue\" as " << value << " from config.txt" << endl;
+            cerr << "successfully loaded \"hue\" as " << value << " from config.txt" << endl;
             h = atof(value.c_str());
         }
         value = settingsReader.getString("h_variance");
         if (value == ""){
-            cout << "failed to load \"h_variance\" from config.txt, using default value of 200" << endl;
+            cerr << "failed to load \"h_variance\" from config.txt, using default value of 200" << endl;
             hVariance = 250;
         } 
         else{
-            cout << "successfully loaded \"hue_max\" as " << value << " from config.txt" << endl;
+            cerr << "successfully loaded \"hue_max\" as " << value << " from config.txt" << endl;
             hVariance = atof(value.c_str());
         }
         value = settingsReader.getString("saturation_min");
         if (value == ""){
-            cout << "failed to load \"saturation_min\" from config.txt, using default value of 200" << endl;
+            cerr << "failed to load \"saturation_min\" from config.txt, using default value of 200" << endl;
             sMin = .1;
         } 
         else{
-            cout << "successfully loaded \"saturation_min\" as " << value << " from config.txt" << endl;
+            cerr << "successfully loaded \"saturation_min\" as " << value << " from config.txt" << endl;
             sMin = atof(value.c_str());
         }
     }
     g_hue = (int16_t)(h*10);
     g_hue_variance = (int16_t)(hVariance*10);
     g_min_s = (int16_t)(sMin*256);//LOOK AT THESE
-    cout << "Final threshholding values are: " << g_hue << "," << g_hue_variance << "," << g_min_s << endl;
+    cerr << "Final threshholding values are: " << g_hue << "," << g_hue_variance << "," << g_min_s << endl;
     m_filtering_system=FilteringSystemNew();
 }
 BallFinder::~BallFinder(){

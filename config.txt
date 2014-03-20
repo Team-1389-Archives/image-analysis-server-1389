@@ -1,3 +1,3 @@
-hue = 345;
+hue = 10;
 h_variance = 20;
-saturation_min = 0.6;
+saturation_min = 0.5;

@@ -1,7 +1,7 @@
 var net=require('net'),
 	child_process=require('child_process');
 
-var PATH_TO_EXE="./run.sh";
+var PATH_TO_EXE="./streamingMain";
 
 var processed="";
 var chld=null;
