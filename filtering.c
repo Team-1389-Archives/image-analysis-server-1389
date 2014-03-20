@@ -23,7 +23,7 @@ struct request{
 	uint32_t num_finished;
 	int num_pixels;
 	uint8_t *data;
-	uint8_t *out;
+	edge_number_t *out;
 	int width, height;
 	uint8_t operation;
 	sem_t notify;
@@ -99,9 +99,7 @@ static inline void threshold_operation(struct pixel *pix, int i, struct request 
 	}
 }
 
-static inline bool edge_detect_predicate(struct pixel *pix, int i, struct request *req){
-    int x=i%req->width;
-    int y=i/req->width;
+static inline bool edge_detect_predicate(struct pixel *pix, int i, struct request *req, int x, int y){
 #define image(x,y)     (req->data[(((x)+(y)*(req->width))*3)+1])
     if(pix->g<127){
         return false;
@@ -114,7 +112,11 @@ static inline bool edge_detect_predicate(struct pixel *pix, int i, struct reques
 }
 
 static inline void edge_detect_operation(struct pixel *pix, int i, struct request *req){
-    req->out[i]=edge_detect_predicate(pix, i, req)?255:0;
+    int x=i%req->width;
+    int y=i/req->width;
+    if(edge_detect_predicate(pix, i, req, x, y)){
+        
+    }
 }
 
 #define PER_PIXEL_OPERATION(func)   for(int idx=thread->idx;true;idx+=NUM_CORES){   \

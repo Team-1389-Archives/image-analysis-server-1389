@@ -35,17 +35,19 @@ int main(){
     circle biggest;
     int width, height;
     uint8_t *data;
-    uint8_t *out_data=NULL;
+    edge_number_t *out_data=NULL;
     do{
         cam.load(&data, &width, &height);
         if(out_data==NULL){
-            out_data=new uint8_t[width*height];
+            out_data=new edge_number_t[width*height];
         }
         
         finder.filteringSystem(data, width, height, out_data);
-        image.assign(out_data, width, height, 1, 1, true);
+        image.assign(width, height, 1, 3);
+        
+        //image.assign(out_data, width, height, 1, 1, true);
         //memcpy(image.data(0,0,0,0), out_data, width*height);
-        modifiedImage=image;
+        /*modifiedImage=image;
         cs = finder.whereBall(modifiedImage);
         biggest.r = -1;
         for (unsigned int i = 0; i < cs.size(); i++){//find biggest circle
@@ -57,7 +59,7 @@ int main(){
         if (biggest.r != -1){
             cout << biggest.x << " " << biggest.y << " " << biggest.r << '\n';
             cout.flush();
-        }
+        }*/
         //image = finder.threshhold(image);
         //image.blur(image.width()/100);
         //image = finder.booleanEdgeDetect(image);
