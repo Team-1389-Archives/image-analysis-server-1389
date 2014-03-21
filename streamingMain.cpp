@@ -2,6 +2,8 @@
 #include <CImg.h>
 #include <iostream>
 #include <cstdlib>
+#include <cstring>
+#include <signal.h>
 #include "findCircle.h"
 //#define cimg_use_jpeg 1
 //#include "loadCameraModded.h"
@@ -9,8 +11,33 @@
 using namespace std;
 using namespace cimg_library;
 
-int main(){
+static bool running=true;
 
+template<typename T>
+class cpp11_owning_ptr{//Shim for the cpp11 owning_ptr
+public:
+    cpp11_owning_ptr(T* ptr)
+        : m_ptr(ptr)
+    {}
+    virtual ~cpp11_owning_ptr(){
+        if(m_ptr!=NULL){
+            delete m_ptr;
+        }
+    }
+    T* get() const{return m_ptr;}
+private:
+    T* m_ptr;
+};
+
+static void stop_running(int sig){
+    running=false;
+}
+
+int main(int argc, char** argv){
+    signal(SIGINT, stop_running);
+    signal(SIGTERM, stop_running);
+    
+    bool should_display=(argc>1 && strcmp(argv[1], "display")==0);
     unsigned char GREEN[] = {0,255,0};
 
     //CvCapture *camera=cvCreateCameraCapture(3);
@@ -25,7 +52,7 @@ int main(){
     Camera cam("/dev/video3", 640, 480);
     CImg<UINT8> image;
 
-    CImgDisplay disp;
+    cpp11_owning_ptr<CImgDisplay> disp(should_display?new CImgDisplay():NULL);
 
     CImg<UINT8> modifiedImage;
     
@@ -36,6 +63,7 @@ int main(){
     int width, height;
     uint8_t *data;
     uint8_t *out_data=NULL;
+    cerr.flush();
     do{
         cam.load(&data, &width, &height);
         if(out_data==NULL){
@@ -61,8 +89,13 @@ int main(){
         //image = finder.threshhold(image);
         //image.blur(image.width()/100);
         //image = finder.booleanEdgeDetect(image);
-        image.display(disp);
-    }while(!disp.is_closed());
+        if(should_display){
+            image.display(*disp.get());
+        }
+        if (should_display && disp.get()->is_closed()){
+            running = false;
+        }
+    }while(running);
 
     return 0;
 }
