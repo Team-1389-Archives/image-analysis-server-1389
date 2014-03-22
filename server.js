@@ -17,6 +17,7 @@ function stage_processing(){
 			processed=arr[arr.length-2];//The last line won't be delimited yet
 		}
 	});
+	chld.stderr.pipe(process.stderr);
 	chld.on('close', function(code){
 		if(code!==0){
 			console.log('error running test with code '+code);
