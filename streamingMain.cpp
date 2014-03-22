@@ -84,8 +84,10 @@ int main(int argc, char** argv){
 
         if (biggest.r != -1){
             cout << biggest.x << " " << biggest.y << " " << biggest.r << '\n';
-            cout.flush();
+        }else{
+            cout << "0 0 -1\n";
         }
+        cout.flush();
         //image = finder.threshhold(image);
         //image.blur(image.width()/100);
         //image = finder.booleanEdgeDetect(image);
