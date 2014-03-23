@@ -193,18 +193,16 @@ private:
     struct buffer                   *buffers;
     struct v4l2_format              fmt;
     void set_attr(int id, int value){
-        struct v4l2_queryctrl queryctrl={
-            .id=id
-        };
+        struct v4l2_queryctrl queryctrl={0};
+        queryctrl.id=id;
         xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl);
         if(queryctrl.flags&V4L_CTRL_FLAG_DISABLED){
             fprintf(stderr, "ID: %d not supported\n", id);
             abort();
         }
-        struct v4l_control control={
-            .id=id,
-            .value=value
-        };
+        struct v4l_control control={0};
+        control.id=id;
+        control.value=value;
         xioctl(fd, VIDIOC_S_CTRL, &control);
     }
 };

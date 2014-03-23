@@ -30,36 +30,33 @@ BallFinder::BallFinder(ConfigReader &reader)
 {
     ballHValue = 220;//remove
     float h, hVariance, sMin;
+    string value;
+    value = settingsReader.getString("hue");
+    if (value == ""){
+        cerr << "failed to load \"hue\" from config.txt, using default value of 200" << endl;
+        h = 200;
+    } 
     else{
-        cerr << "successfully loaded config.txt" << endl;
-        string value;
-        value = settingsReader.getString("hue");
-        if (value == ""){
-            cerr << "failed to load \"hue\" from config.txt, using default value of 200" << endl;
-            h = 200;
-        } 
-        else{
-            cerr << "successfully loaded \"hue\" as " << value << " from config.txt" << endl;
-            h = atof(value.c_str());
-        }
-        value = settingsReader.getString("h_variance");
-        if (value == ""){
-            cerr << "failed to load \"h_variance\" from config.txt, using default value of 200" << endl;
-            hVariance = 250;
-        } 
-        else{
-            cerr << "successfully loaded \"hue_max\" as " << value << " from config.txt" << endl;
-            hVariance = atof(value.c_str());
-        }
-        value = settingsReader.getString("saturation_min");
-        if (value == ""){
-            cerr << "failed to load \"saturation_min\" from config.txt, using default value of 200" << endl;
-            sMin = .1;
-        } 
-        else{
-            cerr << "successfully loaded \"saturation_min\" as " << value << " from config.txt" << endl;
-            sMin = atof(value.c_str());
-        }
+        cerr << "successfully loaded \"hue\" as " << value << " from config.txt" << endl;
+        h = atof(value.c_str());
+    }
+    value = settingsReader.getString("h_variance");
+    if (value == ""){
+        cerr << "failed to load \"h_variance\" from config.txt, using default value of 200" << endl;
+        hVariance = 250;
+    } 
+    else{
+        cerr << "successfully loaded \"hue_max\" as " << value << " from config.txt" << endl;
+        hVariance = atof(value.c_str());
+    }
+    value = settingsReader.getString("saturation_min");
+    if (value == ""){
+        cerr << "failed to load \"saturation_min\" from config.txt, using default value of 200" << endl;
+        sMin = .1;
+    } 
+    else{
+        cerr << "successfully loaded \"saturation_min\" as " << value << " from config.txt" << endl;
+        sMin = atof(value.c_str());
     }
     g_hue = (int16_t)(h*10);
     g_hue_variance = (int16_t)(hVariance*10);
