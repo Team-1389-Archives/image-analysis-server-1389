@@ -25,7 +25,9 @@ inline void setRgb(CImg<UINT8>& image,int x ,int y, rgb color){
 
 inline float square(float num){return num * num;}
 
-BallFinder::BallFinder(){
+BallFinder::BallFinder(ConfigReader &reader)
+    : settingsReader(reader)
+{
     ballHValue = 220;//remove
     float h, hVariance, sMin;
     if (!settingsReader.loadFromFile("config.txt")){

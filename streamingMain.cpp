@@ -48,7 +48,7 @@ int main(int argc, char** argv){
         cerr<<"Unable to open camera stream"<<endl;
         abort();
     }*/
-
+    ConfigReader config;
     Camera cam("/dev/video3", 640, 480);
     CImg<UINT8> image;
 
@@ -56,7 +56,7 @@ int main(int argc, char** argv){
 
     CImg<UINT8> modifiedImage;
     
-    BallFinder finder;
+    BallFinder finder(config);
 
     vector<circle> cs;
     circle biggest;

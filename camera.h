@@ -52,7 +52,7 @@ static void xioctl(int fh, int request, void *arg)
 
 class Camera {
 public:
-    Camera(const char *dev_name, int width, int height) {
+    Camera(const char *dev_name, int width, int height, int exposure, int whitepoint) {
         struct v4l2_buffer              buf;
         struct v4l2_requestbuffers      req;
         enum v4l2_buf_type              type;
@@ -79,7 +79,11 @@ public:
         if ((fmt.fmt.pix.width != 640) || (fmt.fmt.pix.height != 480))
             printf("Warning: driver is sending image at %dx%d\n",
                    fmt.fmt.pix.width, fmt.fmt.pix.height);
-
+        xioctl(fd, V4L2_CID_EXPOSURE, V4L2_EXPOSURE_SHUTTER_PRIORITY);
+        set_attr(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_SHUTTER_PRIORITY);
+        set_attr(V4L2_CID_EXPOSURE_ABSOLUTE, exposure);
+        set_attr(V4L2_CID_AUTO_WHITE_BALANCE, 0);
+        set_attr(V4L2_CID_WHITE_BALANCE_TEMPERATURE, whitepoint);
         CLEAR(req);
         req.count = 1;
         req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -189,6 +193,21 @@ private:
     unsigned int n_buffers;
     struct buffer                   *buffers;
     struct v4l2_format              fmt;
+    void set_attr(int id, int value){
+        struct v4l2_queryctrl queryctrl={
+            .id=id
+        };
+        xioctl(fd, VIDIOC_QUERYCTRL, &queryctrl);
+        if(queryctrl.flags&V4L_CTRL_FLAG_DISABLED){
+            fprintf(stderr, "ID: %d not supported\n", id);
+            abort();
+        }
+        struct v4l_control control={
+            .id=id,
+            .value=value
+        };
+        xioctl(fd, VIDIOC_S_CTRL, &control);
+    }
 };
 
 #endif

@@ -95,7 +95,7 @@ struct line{//ax+by+c=0
 
 class BallFinder{
 public:
-    BallFinder();
+    BallFinder(ConfigReader &reader);
     virtual ~BallFinder();
 
     CImg<UINT8> threshhold(CImg<UINT8>& image); //uint8_t 
@@ -119,7 +119,7 @@ private:
     float ballHValue;
     int imageWidth;//used because some operations need to work proportional to image size
     filtering_system_t m_filtering_system;
-    ConfigReader settingsReader;
+    ConfigReader &settingsReader;
 };
 
 line findPerpendicularLine(point p1, point p2);
