@@ -30,12 +30,6 @@ BallFinder::BallFinder(ConfigReader &reader)
 {
     ballHValue = 220;//remove
     float h, hVariance, sMin;
-    if (!settingsReader.loadFromFile("config.txt")){
-        cerr << "failed to load config.txt\nusing default values (hue min =, hue max =, saturation min =)" << endl;
-        h = 200;
-        hVariance = 250;
-        sMin = 0.2;
-    }
     else{
         cerr << "successfully loaded config.txt" << endl;
         string value;

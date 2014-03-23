@@ -2,7 +2,7 @@
 #include <string>
 #include <map>
 #include <fstream>
-#include <cstdlib>
+#include <iostream>
 
 
 using namespace std;
@@ -11,14 +11,18 @@ class ConfigReader;
 
 class ConfigReader{
     public:
-    	ConfigReader(){}
+    	ConfigReader(string name){
+    		if(!loadFromFile(name)){
+    			cerr<<"Unable to open config file "<<name<<endl;
+    		}
+    	}
     	ConfigReader(const ConfigReader &other)
     		: values(other.values)
     	{}
     	virtual ~ConfigReader(){}
         bool loadFromString(string);
-        bool loadFromFile(string);
         string getString(string);
     private:
+    	bool loadFromFile(string);
         map <string, string> values;
 };

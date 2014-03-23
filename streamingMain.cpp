@@ -48,7 +48,7 @@ int main(int argc, char** argv){
         cerr<<"Unable to open camera stream"<<endl;
         abort();
     }*/
-    ConfigReader config;
+    ConfigReader config("config.txt");
     Camera cam("/dev/video3", 640, 480);
     CImg<UINT8> image;
 
