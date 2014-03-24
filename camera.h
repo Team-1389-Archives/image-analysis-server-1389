@@ -46,7 +46,7 @@ static void xioctl(int fh, int request, void *arg)
 
     if (r == -1) {
         fprintf(stderr, "error %d, %s\n", errno, strerror(errno));
-        exit(EXIT_FAILURE);
+        abort();
     }
 }
 
