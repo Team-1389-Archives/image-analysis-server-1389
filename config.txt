@@ -1,3 +1,5 @@
 hue = 10;
 h_variance = 20;
-saturation_min = 0.45;
+saturation_min = 0.6;
+exposure = 200;
+whitepoint = 3000;
