@@ -30,7 +30,7 @@ class ConfigReader{
                 string str=values[key];
                 return atoi(str.c_str());
             }else{
-                cerr<<"Config value for "<<key<<" not found"
+                cerr<<"Config value for "<<key<<" not found "
                     <<"defaulting to "<<def<<endl;
                 return def;
             }
