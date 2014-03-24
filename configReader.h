@@ -3,6 +3,7 @@
 #include <map>
 #include <fstream>
 #include <iostream>
+#include <cstdib>
 
 
 using namespace std;
@@ -22,6 +23,16 @@ class ConfigReader{
     	virtual ~ConfigReader(){}
         bool loadFromString(string);
         string getString(string);
+        int getIntDefault(string key, int def){
+            if(values.count(key)){
+                string str=values[key];
+                return atoi(str.c_str());
+            }else{
+                cerr<<"Config value for "<<key<<" not found"
+                    <<"defaulting to "<<def<<endl;
+                return def;
+            }
+        }
     private:
     	bool loadFromFile(string);
         map <string, string> values;

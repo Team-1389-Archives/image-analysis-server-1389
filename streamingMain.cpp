@@ -49,7 +49,9 @@ int main(int argc, char** argv){
         abort();
     }*/
     ConfigReader config("config.txt");
-    Camera cam("/dev/video3", 640, 480);
+    Camera cam("/dev/video3", 640, 480,
+        config.getIntDefault("exposure", 25),
+        config.getIntDefault("whitepoint", 450));
     CImg<UINT8> image;
 
     cpp11_owning_ptr<CImgDisplay> disp(should_display?new CImgDisplay():NULL);
