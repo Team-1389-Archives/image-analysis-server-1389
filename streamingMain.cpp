@@ -49,9 +49,12 @@ int main(int argc, char** argv){
         abort();
     }*/
     ConfigReader config("config.txt");
+    int exposure=config.getIntDefault("exposure", 25);
+    int whitepoint=config.getIntDefault("whitepoint", 3000);
+    cerr<<"Exposure is "<<exposure<<endl;
+    cerr<<"Whitepoint is "<<whitepoint<<endl;
     Camera cam("/dev/video3", 640, 480,
-        config.getIntDefault("exposure", 25),
-        config.getIntDefault("whitepoint", 3000));
+        exposure, whitepoint);
     CImg<UINT8> image;
 
     cpp11_owning_ptr<CImgDisplay> disp(should_display?new CImgDisplay():NULL);
