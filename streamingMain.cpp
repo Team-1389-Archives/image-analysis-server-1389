@@ -56,7 +56,6 @@ int main(int argc, char** argv){
     Camera cam("/dev/video3", 640, 480,
         exposure, whitepoint);
     CImg<UINT8> image;
-
     cpp11_owning_ptr<CImgDisplay> disp(should_display?new CImgDisplay():NULL);
 
     CImg<UINT8> modifiedImage;
