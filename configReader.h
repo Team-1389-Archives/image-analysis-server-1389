@@ -1,9 +1,11 @@
+#ifndef CONFIG_READER_H
+#define CONFIG_READER_H
 #include <vector>
 #include <string>
 #include <map>
 #include <fstream>
 #include <iostream>
-#include <cstdib>
+#include <cstdlib>
 
 
 using namespace std;
@@ -37,3 +39,5 @@ class ConfigReader{
     	bool loadFromFile(string);
         map <string, string> values;
 };
+
+#endif
