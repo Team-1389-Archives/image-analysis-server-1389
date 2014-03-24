@@ -79,7 +79,7 @@ public:
         if ((fmt.fmt.pix.width != 640) || (fmt.fmt.pix.height != 480))
             printf("Warning: driver is sending image at %dx%d\n",
                    fmt.fmt.pix.width, fmt.fmt.pix.height);
-        set_attr(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_SHUTTER_PRIORITY);
+        set_attr(V4L2_CID_EXPOSURE_AUTO, V4L2_EXPOSURE_MANUAL);
         set_attr(V4L2_CID_EXPOSURE_ABSOLUTE, exposure);
         set_attr(V4L2_CID_AUTO_WHITE_BALANCE, 0);
         set_attr(V4L2_CID_WHITE_BALANCE_TEMPERATURE, whitepoint);
